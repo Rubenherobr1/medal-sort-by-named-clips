@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org).
 
-## Unreleased
+
+## [0.2.0] - 2026-07-18
 
 ### What's new
 
-- Improve README.md
+- Get the clip's title and it's byte prefix, which follows MessagePack's
+str format.
+- Improve README.md and explain why i dont use the available MessagePack
+python libraries.
 
 
 ## [0.1.0] - 2026-07-17
@@ -23,4 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 
 [0.1.0]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v0.1.0
+[0.2.0]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v0.2.0
 
