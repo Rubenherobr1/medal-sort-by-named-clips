@@ -1,0 +1,19 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org).
+
+## [0.1.0] - 2026-07-17
+
+### What's New
+
+- Get the path to the local Medal database
+- Get the id, path and metadata of the Medal clips
+- Improve README.md
+- Add CHANGELOG.md, LICENSE.md and .gitignore
+
+
+[0.1.0]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v0.1.0
+
