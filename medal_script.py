@@ -4,10 +4,15 @@ import pyshortcuts as pyshort # https://github.com/newville/pyshortcuts - pip in
 from pathlib import Path
 
 
-def decodeTitle(metadata, titleIDPos):
-    titleID = bin(metadata[titleIDPos]).replace("0b", "")
-    titleID = "0" * (8 - len(titleID)) + titleID # if titleID is not 8 bytes, this will ensure the representation will have 8 bytes regardless, so the splicing og the string is done correctly
+def normBin(decimalByte):
+    byte = bin(decimalByte).replace("0b", "")
+    byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
 
+    return byte
+
+
+def decodeTitle(metadata, titleIDPos):
+    titleID = normBin(metadata[titleIDPos])
     sizeID = int(titleID[:4], 2)
     
     str8, str16 = int("C", 16), int("D", 16) 
@@ -24,7 +29,7 @@ def decodeTitle(metadata, titleIDPos):
 
     elif sizeID == str16:
         byte1, byte2 = (
-            bin(metadata[titleIDPos + i]).replace("0b", "") for i in (1, 2)
+            normBin(metadata[titleIDPos + i]) for i in (1, 2)
         )
 
         titleLen = int(byte1 + byte2, 2)
