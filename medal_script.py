@@ -1,5 +1,9 @@
 import sqlite3 as sqlite
+import subprocess
+import json
+
 from pathlib import Path
+from sys import platform
 
 
 def normBin(decimalByte):
@@ -44,6 +48,49 @@ def decodeTitle(metadata, titleIDPos):
     return metadata[titlePos : titlePos + titleLen].decode("utf-8")
 
 
+def getPreviousDir():
+    jsonFileName = ".copied-clips.json"
+    clipsDirName = "Named_clips"
+
+    # get a list of all clipsDir-like folders
+    clipsDirMatches = list(
+        Path.cwd().glob("Named_clips-[0-9]/", case_sensitive = True)
+    )
+
+    if Path(clipsDirName).exists():
+        clipsDirMatches.append(Path(clipsDirName))
+
+    clipsDirMatches = sorted(clipsDirMatches)
+    nSuffixes = []
+
+    # check if it has a json file. if it dosen't, it is assumed to be a user-created folder
+    for dir in clipsDirMatches:
+        if (jsonPath := dir / jsonFileName).exists():
+            clipsDir = dir
+            return True, jsonPath, clipsDir
+        
+        nSuffixes.append(str(dir.name).replace("Named_clips-", "")) # "Named_clips" won't be matched due to the '-'
+
+    # create a dir path if none matched
+    try: clipsDir
+    except NameError:
+        count = 1
+
+        while True:
+            if str(count) in nSuffixes or (count == 1 and "Named_clips" in nSuffixes):
+                count += 1
+                continue
+            
+            suffix = f"-{count}" if count != 1 else ""
+
+            clipsDir = Path(clipsDirName + suffix)
+            jsonPath = clipsDir / jsonFileName
+
+            break
+
+    return False, jsonPath, clipsDir
+
+
 # find db path
 medalPath = Path(Path.home(), "AppData", "Roaming", "Medal")
 
@@ -65,28 +112,49 @@ resultSet = db.execute("SELECT remote_content_id, video_path, metadata FROM cont
 print("Connected to database and executed query\n")
 
 
-# create the folder if it dosen't exist yet
-clipsDir = Path("Named-clips")
-clipsDir.mkdir(exist_ok=True)
+# create the folder where the clips will be in if it dosen't exist yet
+previousDir, jsonPath, clipsDir = getPreviousDir()
+
+if previousDir:
+    with open(jsonPath, "r") as fJSON:
+        oldCopiedFiles = json.load(fJSON)
+
+else:
+    clipsDir.mkdir()
+    oldCopiedFiles = {} # what is expected to be outputed if i load a JSON file with an empty dict
 
 
-MAX_PATH_LEN = 260 # on Windows. Bigger paths can exist on linux
-titleList = [] # used to see how many times a title repeat
+# parse the db result set
+MAX_PATH_LEN = 260 # on Windows
+titleList = [] # used to see how many times a title repeats
+idList = [] # used to check if a clip isn't in medal anymore
+copiedFiles = {}
+copyCount = 0
 
 for id, path, metadata in resultSet: 
     path = Path(path)
 
-    # get the title
+    # get the title, check if it exists
     titleIDPos = metadata.index(b"title") + len("title")
     title = decodeTitle(metadata, titleIDPos)
 
     if title is None: continue
+    print(f"Found '{title}'", end="")
 
-    print(f"Found '{title}', copying...")
+
+    # check if the clip is arleady in the directory
+    if oldCopiedFiles.get(id) is None:
+        print(", copying...")
+        newClip = True
+    else:    
+        print()        
+        newClip = False
+
     titleList.append(title)
+    idList.append(id)
 
-
-    # alter the clip's title when necessary
+    
+    # alter the clip's title if necessary
     if (nRepeats := titleList.count(title)) > 1: # if the title is repeated
         print(f"\033[1mNote:\033[0m The title is repeated, so '-{nRepeats}' will be added at the end")
         title += f"-{nRepeats}"
@@ -98,26 +166,58 @@ for id, path, metadata in resultSet:
         title = title[:charsLeft] 
 
         if not title:
-            raise NotImplementedError("Path is too big to copy a file with a name to it")
+            PathSizeError = Exception()
+            raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated")
 
-    
-    # copy clip to the target folder
+
+    # copy the clip, if it's new
     targetPath = clipsDir / (title + path.suffix)
-    path.copy(targetPath, preserve_metadata = True) # still runs if the file exists, to prevent possible errors from medal's db data changing
+
+    if newClip:
+        path.copy(targetPath, preserve_metadata = True)
+        copyCount += 1
+
+    # save the file to the log
+    copiedFiles[id] = str(targetPath)
+    
+
+# delete outdated clips
+outdatedCount = 0
+
+for id in oldCopiedFiles:
+    if id not in idList:
+        Path(oldCopiedFiles[id]).unlink()
+        outdatedCount += 1
+
+print(f"\nFound and deleted {outdatedCount} outdated clips")
 
 
-print(f"\nFinished sorting through clips. Copied {len(titleList)} files")
+# generate JSON file to check differentiate between user-created "Named-clips" folders,
+# to check if there are outdated clips or if a clips is arleady in the directory
+
+if platform == "win32" and jsonPath.exists(): # Windows
+    subprocess.run(["attrib", "-H", jsonPath], check=True) # temporarily make the file visible again so i have write permissions
+
+with open(jsonPath, "w") as fJSON:
+    json.dump(copiedFiles, fJSON, indent = "\t")
+
+if platform == "win32": 
+    # hide the file to disencourage edits/deletion
+    subprocess.run(["attrib", "+H", jsonPath], check=True)
+
+
+print(f"Generated JSON file successfully")
+print(f"Finished sorting through clips. Copied {copyCount}/{len(titleList)} files\n")
+
 
 
 '''
 TODO:
-- Make a JSON file with a list of the files that i have upon executing the script.
-Compare it with the current JSON file to see which files have been removed, and
-check for it's existance to make sure the folder was created.
+- Add minimum storage recomendation/requirement
+- Handle edge case: imported clips have title at the end
 - Add "instalation" and "usage" section to README (?)
-- Warn about deleting or altering the JSON file, and explain how the script works
-on README (summed up)
-- Maybe save the clips to an album on Medal.
+- Explain how the script works on README (summed up)
+- Maybe save the clips to an album on Medal
 '''
 
 
