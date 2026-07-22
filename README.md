@@ -21,3 +21,15 @@ The script may or may not work in future or past versions. If you think it does 
 feel free to open a PR or an issue so i can see what i can do!
 
 
+## Other issues that might happen
+
+Due to the nature of this project, i can't say with 100% certainty that the script will not break
+if you **change devices**. Since i don't have 2 computers, i can't test for this.
+
+I recommend that if you do, you simply delete the old folder and execute the script again to generate
+a new folder. 
+
+If anyone wants to test it and tell me if any issues happened, feel free to open an issue!
+
+
+
