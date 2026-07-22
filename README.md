@@ -31,5 +31,6 @@ a new folder.
 
 If anyone wants to test it and tell me if any issues happened, feel free to open an issue!
 
+# Deleting the generated JSON file WILL break things. There's a reason it's hidden.
 
 
