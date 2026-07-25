@@ -6,48 +6,6 @@ from pathlib import Path
 from sys import platform
 
 
-def normBin(decimalByte):
-    byte = bin(decimalByte).replace("0b", "")
-    byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
-
-    return byte
-
-
-def decodeTitle(metadata, titleIDPos):
-    titleID = normBin(metadata[titleIDPos])
-    sizeID = int(titleID[:4], 2)
-    
-    str8, str16 = int("C", 16), int("D", 16) 
-
-
-    # the length of the title is in the next byte
-    if sizeID == str8:
-        titleLen = metadata[titleIDPos + 1]
-        titlePos = titleIDPos + 2
-
-    # the length of the title is the next 2 bytes, as if the 1st of the 
-    # two bytes was read together with the second byte. This is the limit
-    # for medal clip names (280 bytes)
-
-    elif sizeID == str16:
-        byte1, byte2 = (
-            normBin(metadata[titleIDPos + i]) for i in (1, 2)
-        )
-
-        titleLen = int(byte1 + byte2, 2)
-        titlePos = titleIDPos + 3
-
-    # the length of the title is the 1st nibble of the titleID byte
-    else:
-        if sizeID == 0:
-            return None
-        
-        titleLen = sizeID
-        titlePos = titleIDPos + 1
-
-    return metadata[titlePos : titlePos + titleLen].decode("utf-8")
-
-
 def getPreviousDir():
     jsonFileName = ".copied-clips.json"
     clipsDirName = "Named_clips"
@@ -89,6 +47,48 @@ def getPreviousDir():
             break
 
     return False, jsonPath, clipsDir
+
+
+def normBin(decimalByte):
+    byte = bin(decimalByte).replace("0b", "")
+    byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
+
+    return byte
+
+
+def decodeTitle(metadata, titleIDPos):
+    titleID = normBin(metadata[titleIDPos])
+    sizeID = int(titleID[:4], 2)
+    
+    str8, str16 = int("C", 16), int("D", 16) 
+
+
+    # the length of the title is in the next byte
+    if sizeID == str8:
+        titleLen = metadata[titleIDPos + 1]
+        titlePos = titleIDPos + 2
+
+    # the length of the title is the next 2 bytes, as if the 1st of the 
+    # two bytes was read together with the second byte. This is the limit
+    # for medal clip names (280 bytes)
+
+    elif sizeID == str16:
+        byte1, byte2 = (
+            normBin(metadata[titleIDPos + i]) for i in (1, 2)
+        )
+
+        titleLen = int(byte1 + byte2, 2)
+        titlePos = titleIDPos + 3
+
+    # the length of the title is the 1st nibble of the titleID byte
+    else:
+        if sizeID == 0:
+            return None
+        
+        titleLen = sizeID
+        titlePos = titleIDPos + 1
+
+    return metadata[titlePos : titlePos + titleLen].decode("utf-8")
 
 
 # find db path
