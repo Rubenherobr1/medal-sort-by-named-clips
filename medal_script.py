@@ -49,6 +49,28 @@ def getPreviousDir():
     return False, jsonPath, clipsDir
 
 
+def findTitlePos(metadata):
+    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
+
+    try:
+        untitledPos = metadata.index(b"Untitled")
+
+    except ValueError:
+        pass
+
+    else:
+        # for imported clips, a key called "contentTitle" will always be "Untitled", and never change,
+        # and for clips that are manually imported, the "title" key will be at the end. Since the word
+        # "title" is in "Untitled", i need to start the index search after that word
+
+        if untitledPos + 2 == key_titlePos:
+            titleIDPos = metadata.index(b"title", key_titlePos + 1) + len("title")
+            return titleIDPos
+
+    titleIDPos = metadata.index(b"title") + len("title")
+    return titleIDPos
+
+
 def normBin(decimalByte):
     byte = bin(decimalByte).replace("0b", "")
     byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
@@ -135,7 +157,7 @@ for id, path, metadata in resultSet:
     path = Path(path)
 
     # get the title, check if it exists
-    titleIDPos = metadata.index(b"title") + len("title")
+    titleIDPos = findTitlePos(metadata)
     title = decodeTitle(metadata, titleIDPos)
 
     if title is None: continue
@@ -216,7 +238,6 @@ print(f"Finished sorting through clips. Copied {copyCount}/{len(titleList)} file
 '''
 TODO:
 - Add minimum storage recomendation/requirement
-- Handle edge case: imported clips have title at the end
 - Add "instalation" and "usage" section to README (?)
 - Explain how the script works on README (summed up)
 - Maybe save the clips to an album on Medal
