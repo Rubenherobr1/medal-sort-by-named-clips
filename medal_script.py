@@ -139,18 +139,18 @@ previousDir, jsonPath, clipsDir = getPreviousDir()
 
 if previousDir:
     with open(jsonPath, "r") as fJSON:
-        oldCopiedFiles = json.load(fJSON)
+        oldCopiedClips = json.load(fJSON)
 
 else:
     clipsDir.mkdir()
-    oldCopiedFiles = {} # what is expected to be outputed if i load a JSON file with an empty dict
+    oldCopiedClips = {} # what is expected to be outputed if i load a JSON file with an empty dict
 
 
 # parse the db result set
 MAX_PATH_LEN = 260 # on Windows
 titleList = [] # used to see how many times a title repeats
 idList = [] # used to check if a clip isn't in medal anymore
-copiedFiles = {}
+copiedClips = {}
 copyCount = 0
 
 for id, path, metadata in resultSet: 
@@ -165,7 +165,7 @@ for id, path, metadata in resultSet:
 
 
     # check if the clip is arleady in the directory
-    if oldCopiedFiles.get(id) is None:
+    if oldCopiedClips.get(id) is None:
         print(", copying...")
         newClip = True
     else:    
@@ -200,7 +200,7 @@ for id, path, metadata in resultSet:
         copyCount += 1
 
     # save the file to the log
-    copiedFiles[id] = str(targetPath)
+    copiedClips[id] = str(targetPath)
 
 db.close()
 
@@ -208,9 +208,9 @@ db.close()
 # delete outdated clips
 outdatedCount = 0
 
-for id in oldCopiedFiles:
+for id in oldCopiedClips:
     if id not in idList:
-        Path(oldCopiedFiles[id]).unlink()
+        Path(oldCopiedClips[id]).unlink()
         outdatedCount += 1
 
 print(f"\nFound and deleted {outdatedCount} outdated clips")
@@ -223,7 +223,7 @@ if platform == "win32" and jsonPath.exists(): # Windows
     subprocess.run(["attrib", "-H", jsonPath], check=True) # temporarily make the file visible again so i have write permissions
 
 with open(jsonPath, "w") as fJSON:
-    json.dump(copiedFiles, fJSON, indent = "\t")
+    json.dump(copiedClips, fJSON, indent = "\t")
 
 if platform == "win32": 
     # hide the file to disencourage edits/deletion
