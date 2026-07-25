@@ -107,7 +107,7 @@ for path in medalPath.iterdir():
 
 # connect to sqlite database and get the video id, path and it's metadata
 db = sqlite.connect(dbPath) 
-resultSet = db.execute("SELECT remote_content_id, video_path, metadata FROM contents")
+resultSet = db.execute("SELECT local_content_id, video_path, metadata FROM contents")
 
 print("Connected to database and executed query\n")
 
