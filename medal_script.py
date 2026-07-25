@@ -110,7 +110,6 @@ db = sqlite.connect(dbPath)
 resultSet = db.execute("SELECT local_content_id, video_path, metadata FROM contents")
 
 print("Connected to database and executed query\n")
-db.close()
 
 
 # create the folder where the clips will be in if it dosen't exist yet
@@ -180,7 +179,9 @@ for id, path, metadata in resultSet:
 
     # save the file to the log
     copiedFiles[id] = str(targetPath)
-    
+
+db.close()
+
 
 # delete outdated clips
 outdatedCount = 0
