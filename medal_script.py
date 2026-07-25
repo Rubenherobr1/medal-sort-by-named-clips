@@ -178,11 +178,11 @@ for id, path, metadata in resultSet:
     
     # alter the clip's title if necessary
     if (nRepeats := titleList.count(title)) > 1: # if the title is repeated
-        print(f"\033[1mNote:\033[0m The title is repeated, so '-{nRepeats}' will be added at the end")
+        print(f"\033[1;4mNote\033[0m: The title is repeated, so '-{nRepeats}' will be added at the end")
         title += f"-{nRepeats}"
 
     if len(str(clipsDir)) + len(title) + len(path.suffix) > MAX_PATH_LEN:
-        print(f"\033[1mNote:\033[0m The title is too big, so it will be truncated")
+        print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
         charsLeft = MAX_PATH_LEN - (len(str(clipsDir)) + len(path.suffix))
         title = title[:charsLeft] 
