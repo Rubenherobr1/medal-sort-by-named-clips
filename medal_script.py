@@ -182,9 +182,24 @@ for id, path, metadata in resultSet:
         title += f"-{nRepeats}"
 
     if len(str(clipsDir)) + len(title) + len(path.suffix) > MAX_PATH_LEN:
+
+    # check if the title is repeated
+    if (nRepeats := Clips.ogTitles.count(title)) > 1:
+        suffix = f"-{nRepeats}"
+        print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
+
+        title += suffix
+        
+    else:
+        suffix = ""
+
+    # check if the title is too long
+    minPathLen = len(str(clipsDir)) + len(path.suffix) + len(suffix)
+
+    if minPathLen + len(title) > MAX_PATH_LEN:
         print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
-        charsLeft = MAX_PATH_LEN - (len(str(clipsDir)) + len(path.suffix))
+        charsLeft = MAX_PATH_LEN - minPathLen
         title = title[:charsLeft] 
 
         if not title:
