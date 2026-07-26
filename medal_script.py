@@ -144,7 +144,7 @@ resultSet = db.execute("SELECT local_content_id, video_path, metadata FROM conte
 print("Connected to database and executed query\n")
 
 
-# create the folder where the clips will be in if it dosen't exist yet
+# create the folder where the clips will be in if it dosen't exist yet and get the previous JSON data
 previousDir, jsonPath, clipsDir = getPreviousDir()
 
 if previousDir:
@@ -233,7 +233,7 @@ for id in oldCopiedClips:
 print(f"Found and deleted {outdatedCount} outdated clips")
 
 
-# generate JSON file to check differentiate between user-created "Named-clips" folders,
+# generate JSON file to differentiate between user-created "Named-clips" folders,
 # to check if there are outdated clips or if a clips is arleady in the directory
 
 if platform == "win32" and jsonPath.exists(): # Windows
