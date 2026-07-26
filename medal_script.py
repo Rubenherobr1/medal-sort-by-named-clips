@@ -205,7 +205,7 @@ for id, path, metadata in resultSet:
 
 
     clip.title = title
-    clip.path = clipsDir / (title + path.suffix)
+    clip.path = str(clipsDir / (title + path.suffix)) # must be str not a Path object to encode it into json
 
 print(f"\nFinished sorting through clips\n")
 db.close()
@@ -240,9 +240,7 @@ if platform == "win32" and jsonPath.exists(): # Windows
     subprocess.run(["attrib", "-H", jsonPath], check=True) # temporarily make the file visible again so i have write permissions
 
 with open(jsonPath, "w") as fJSON:
-    jsonDict = {clip.id: str(clip.path) for clip in clipsToCopy}
-
-    json.dump(jsonDict, fJSON, indent = "\t")
+    json.dump(clipsToCopy, fJSON, indent = "\t")
 
 if platform == "win32": 
     # hide the file to disencourage edits/deletion
