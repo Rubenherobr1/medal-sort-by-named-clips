@@ -6,6 +6,16 @@ from pathlib import Path
 from sys import platform
 
 
+class Clips:
+    copyCount = 0
+    ogTitles = [] # used to see how many times a title repeats
+
+    def __init__(self, id, ogPath):
+        self.id = id
+        self.ogPath = ogPath
+        self.willBeCopied = False
+
+
 def getPreviousDir():
     jsonFileName = ".copied-clips.json"
     clipsDirName = "Named_clips"
@@ -149,16 +159,6 @@ else:
 # parse the db result set
 MAX_PATH_LEN = 260 # on Windows
 clipList = []
-
-class Clips:
-    copyCount = 0
-    ogTitles = [] # used to see how many times a title repeats
-
-    def __init__(self, id, ogPath):
-        self.id = id
-        self.ogPath = ogPath
-        self.willBeCopied = False
-
 
 for id, path, metadata in resultSet: 
     path = Path(path)
