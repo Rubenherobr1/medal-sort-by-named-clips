@@ -148,40 +148,37 @@ else:
 
 # parse the db result set
 MAX_PATH_LEN = 260 # on Windows
-titleList = [] # used to see how many times a title repeats
-idList = [] # used to check if a clip isn't in medal anymore
-copiedClips = {}
-copyCount = 0
+clipList = []
+
+class Clips:
+    copyCount = 0
+    ogTitles = [] # used to see how many times a title repeats
+
+    def __init__(self, id, ogPath):
+        self.id = id
+        self.ogPath = ogPath
+        self.willBeCopied = False
+
 
 for id, path, metadata in resultSet: 
     path = Path(path)
+    clip = Clips(id, path)
 
     # get the title, check if it exists
     titleIDPos = findTitlePos(metadata)
     title = decodeTitle(metadata, titleIDPos)
 
-    if title is None: continue
-    print(f"Found '{title}'", end="")
+    if title is None: 
+        continue
+        
+    print(f"Found '{title}'")
+    Clips.ogTitles.append(title)
 
 
     # check if the clip is arleady in the directory
     if oldCopiedClips.get(id) is None:
-        print(", copying...")
-        newClip = True
-    else:    
-        print()        
-        newClip = False
-
-    titleList.append(title)
-    idList.append(id)
-
-    
-    # alter the clip's title if necessary
-    if (nRepeats := titleList.count(title)) > 1: # if the title is repeated
-        print(f"\033[1;4mNote\033[0m: The title is repeated, so '-{nRepeats}' will be added at the end")
-        title += f"-{nRepeats}"
-
-    if len(str(clipsDir)) + len(title) + len(path.suffix) > MAX_PATH_LEN:
+        Clips.copyCount += 1
+        clip.willBeCopied = True
 
     # check if the title is repeated
     if (nRepeats := Clips.ogTitles.count(title)) > 1:
@@ -207,28 +204,33 @@ for id, path, metadata in resultSet:
             raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated")
 
 
-    # copy the clip, if it's new
-    targetPath = clipsDir / (title + path.suffix)
+    clip.title = title
+    clip.path = clipsDir / (title + path.suffix)
 
-    if newClip:
-        path.copy(targetPath, preserve_metadata = True)
-        copyCount += 1
-
-    # save the file to the log
-    copiedClips[id] = str(targetPath)
-
+print(f"\nFinished sorting through clips\n")
 db.close()
+
+
+# copy new clips
+clipsToCopy = {clip.id: clip.path for clip in clipList if clip.willBeCopied}
+
+for clip in clipsToCopy:
+    print(f"Copying '{clip.title}'...")
+    clip.ogPath.copy(clip.path, preserve_metadata = True)
+
+print(f"\nCopied {Clips.copyCount}/{len(clipList)} clips")
 
 
 # delete outdated clips
 outdatedCount = 0
+clipIds = tuple(clip.id for clip in clipList)
 
 for id in oldCopiedClips:
-    if id not in idList:
+    if id not in clipIds:
         Path(oldCopiedClips[id]).unlink()
         outdatedCount += 1
 
-print(f"\nFound and deleted {outdatedCount} outdated clips")
+print(f"Found and deleted {outdatedCount} outdated clips")
 
 
 # generate JSON file to check differentiate between user-created "Named-clips" folders,
@@ -238,15 +240,15 @@ if platform == "win32" and jsonPath.exists(): # Windows
     subprocess.run(["attrib", "-H", jsonPath], check=True) # temporarily make the file visible again so i have write permissions
 
 with open(jsonPath, "w") as fJSON:
-    json.dump(copiedClips, fJSON, indent = "\t")
+    jsonDict = {clip.id: str(clip.path) for clip in clipsToCopy}
+
+    json.dump(jsonDict, fJSON, indent = "\t")
 
 if platform == "win32": 
     # hide the file to disencourage edits/deletion
     subprocess.run(["attrib", "+H", jsonPath], check=True)
 
-
 print(f"Generated JSON file successfully")
-print(f"Finished sorting through clips. Copied {copyCount}/{len(titleList)} files\n")
 
 
 
