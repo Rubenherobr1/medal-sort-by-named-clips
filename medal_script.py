@@ -13,7 +13,7 @@ class Clips:
     def __init__(self, id, ogPath):
         self.id = id
         self.ogPath = ogPath
-        self.willBeCopied = False
+        self.isNew = False
 
 
 def getPreviousDir():
@@ -164,6 +164,14 @@ for id, path, metadata in resultSet:
     path = Path(path)
     clip = Clips(id, path)
 
+    # check if the clip is arleady in the directory
+    if oldCopiedClips.get(id) is not None:
+        clip.path = Path(oldCopiedClips.get(id))
+        clipList.append(clip)
+
+        continue
+
+
     # get the title, check if it exists
     titleIDPos = findTitlePos(metadata)
     title = decodeStrType(metadata, titleIDPos)
@@ -172,13 +180,11 @@ for id, path, metadata in resultSet:
         continue
         
     print(f"Found '{title}'")
+
     Clips.ogTitles.append(title)
+    Clips.copyCount += 1
+    clip.isNew = True
 
-
-    # check if the clip is arleady in the directory
-    if oldCopiedClips.get(id) is None:
-        Clips.copyCount += 1
-        clip.willBeCopied = True
 
     # check if the title is repeated
     if (nRepeats := Clips.ogTitles.count(title)) > 1:
@@ -212,7 +218,7 @@ db.close()
 
 
 # copy new clips
-clipsToCopy = {clip.id: clip.path for clip in clipList if clip.willBeCopied}
+clipsToCopy = {clip.id: clip.path for clip in clipList if clip.isNew}
 
 for clip in clipsToCopy:
     print(f"Copying '{clip.title}'...")
