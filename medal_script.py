@@ -17,6 +17,7 @@ class Clips:
         self.link = None
 
 
+# pre-processing
 def getPreviousDir():
     jsonFileName = ".copied-clips.json"
     clipsDirName = "Named_clips"
@@ -60,6 +61,7 @@ def getPreviousDir():
     return False, jsonPath, clipsDir
 
 
+# title related
 def findTitlePos(metadata, key_titlePos):
     try:
         untitledPos = metadata.index(b"Untitled")
@@ -80,6 +82,7 @@ def findTitlePos(metadata, key_titlePos):
     return titleIDPos
 
 
+# decoding related
 def normBin(decimalByte):
     byte = bin(decimalByte).replace("0b", "")
     byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
@@ -121,6 +124,7 @@ def decodeStrType(metadata, strIDPos):
     return metadata[strPos : strPos + strLen].decode("utf-8")
 
 
+# remote related
 def queryFileExtension(link):
     info = ydl.extract_info(link, download = False)
 
@@ -195,7 +199,7 @@ for id, path, metadata in resultSet:
         continue
 
 
-    # get the title, check if it exists
+    # get the title
     key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
     titleIDPos = findTitlePos(metadata, key_titlePos)
 
