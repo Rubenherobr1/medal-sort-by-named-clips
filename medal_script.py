@@ -1,4 +1,5 @@
 import sqlite3 as sqlite
+import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 import subprocess
 import json
 
@@ -10,10 +11,11 @@ class Clips:
     copyCount = 0
     ogTitles = [] # used to see how many times a title repeats
 
-    def __init__(self, id, ogPath):
+    def __init__(self, id):
         self.id = id
-        self.ogPath = ogPath
+
         self.isNew = False
+        self.link = None
 
 
 def getPreviousDir():
@@ -59,9 +61,7 @@ def getPreviousDir():
     return False, jsonPath, clipsDir
 
 
-def findTitlePos(metadata):
-    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
-
+def findTitlePos(metadata, key_titlePos):
     try:
         untitledPos = metadata.index(b"Untitled")
 
@@ -122,6 +122,11 @@ def decodeStrType(metadata, strIDPos):
     return metadata[strPos : strPos + strLen].decode("utf-8")
 
 
+def queryFileExtension(link):
+    info = ydl.extract_info(link, download = False)
+
+    return info["formats"][0]["ext"]
+
 
 # find db path
 medalPath = Path(Path.home(), "AppData", "Roaming", "Medal")
@@ -156,13 +161,17 @@ else:
     oldCopiedClips = {} # what is expected to be outputed if i load a JSON file with an empty dict
 
 
+# set up class that handles remote clips
+config = {"quiet": "true"} # don't print messages to stdout
+
+ydl = ytdlp.YoutubeDL(config)
+
 # parse the db result set
 MAX_PATH_LEN = 260 # on Windows
 clipList = []
 
 for id, path, metadata in resultSet: 
-    path = Path(path)
-    clip = Clips(id, path)
+    clip = Clips(id)
 
     # check if the clip is arleady in the directory
     if oldCopiedClips.get(id) is not None:
@@ -173,10 +182,12 @@ for id, path, metadata in resultSet:
 
 
     # get the title, check if it exists
-    titleIDPos = findTitlePos(metadata)
-    title = decodeStrType(metadata, titleIDPos)
+    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
+    titleIDPos = findTitlePos(metadata, key_titlePos)
 
-    if title is None: 
+    title = decodeStrType(metadata, titleIDPos)
+    
+    if title is None:
         continue
         
     print(f"Found '{title}'")
@@ -186,6 +197,21 @@ for id, path, metadata in resultSet:
     clip.isNew = True
 
 
+    # check if the clip is remote
+    if path is not None:
+        path = Path(path)
+
+        clip.ogPath = path
+        fileExtension = path.suffix
+
+    else:
+        clip.link = decodeStrType( # start search after the title to prevent any error due to user input
+            metadata, metadata.index(b"contentShareUrl", key_titlePos + 1) + len("contentShareUrl")
+        )
+        
+        fileExtension = queryFileExtension(clip.link) 
+        
+        
     # check if the title is repeated
     if (nRepeats := Clips.ogTitles.count(title)) > 1:
         suffix = f"-{nRepeats}"
@@ -197,7 +223,7 @@ for id, path, metadata in resultSet:
         suffix = ""
 
     # check if the title is too long
-    minPathLen = len(str(clipsDir)) + len(path.suffix) + len(suffix)
+    minPathLen = len(str(clipsDir)) + len(fileExtension) + len(suffix)
 
     if minPathLen + len(title) > MAX_PATH_LEN:
         print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
@@ -211,14 +237,14 @@ for id, path, metadata in resultSet:
 
 
     clip.title = title
-    clip.path = str(clipsDir / (title + path.suffix)) # must be str not a Path object to encode it into json
+    clip.path = clipsDir / (title + fileExtension)
 
 print(f"\nFinished sorting through clips\n")
 db.close()
 
 
 # copy new clips
-clipsToCopy = {clip.id: clip.path for clip in clipList if clip.isNew}
+clipsToCopy = {clip.id: str(clip.path) for clip in clipList if clip.isNew}
 
 for clip in clipsToCopy:
     print(f"Copying '{clip.title}'...")
