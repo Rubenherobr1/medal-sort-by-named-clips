@@ -238,6 +238,7 @@ for id, path, metadata in resultSet:
 
     clip.title = title
     clip.path = clipsDir / (title + fileExtension)
+    clipList.append(clip)
 
 print(f"\nFinished sorting through clips\n")
 db.close()
