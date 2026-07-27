@@ -127,6 +127,14 @@ def queryFileExtension(link):
     return info["formats"][0]["ext"]
 
 
+def downloadClips(remoteClipList):
+    ydl.params["quiet"] = "false"
+
+    if (errCode := ydl.download(remoteClipList)) != 0:
+        DownloadFailed = Exception()
+        raise DownloadFailed(f"The download failed (code: '{errCode}')")
+
+
 # find db path
 medalPath = Path(Path.home(), "AppData", "Roaming", "Medal")
 
@@ -161,7 +169,14 @@ else:
 
 
 # set up class that handles remote clips
-config = {"quiet": "true"} # don't print messages to stdout
+config = {
+    "outtmpl": "%(title)s.%(ext)s", # the filename template
+    "quiet": "true", # don't print messages to stdout
+    "overwrites": "false", # don't overwrite other files
+    "paths": {
+        "home": str(clipsDir) # the default path to put the downloads in
+    }
+}
 
 ydl = ytdlp.YoutubeDL(config)
 
@@ -241,8 +256,9 @@ print(f"\nFinished sorting through clips (found {len(clipList)}). Now copying...
 db.close()
 
 
-# copy new clips
+# copy/download new clips
 newClips = tuple(clip for clip in clipList if clip.isNew)
+remoteClipList = []
 copyCount = 0
 
 for clip in newClips:
@@ -252,7 +268,13 @@ for clip in newClips:
         clip.ogPath.copy(clip.path, preserve_metadata = True)
         copyCount += 1
 
-print(f"\nFinished copying {copyCount} clips\n")
+    else:
+        remoteClipList.append(clip)
+
+print(f"\nFinished copying {copyCount} clips. Now downloading...\n")
+
+downloadClips(remoteClipList)
+print(f"\nFinished downloading {len(remoteClipList)} clips")
 
 
 # delete outdated clips
