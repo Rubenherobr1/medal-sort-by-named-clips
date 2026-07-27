@@ -2,6 +2,7 @@ import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 import subprocess
 import json
+import sys
 
 from pathlib import Path
 from sys import platform
@@ -139,6 +140,17 @@ def downloadClips(remoteClipList):
         raise DownloadFailed(f"The download failed (code: '{errCode}')")
 
 
+# utility functions
+def endScript():
+    print("Exiting...\n")
+    sys.exit()
+
+
+def plural(value):
+    if value == 1: return ""
+    else: return "s" # w/ 0, the gramticly correct thing is with s
+
+
 # find db path
 medalPath = Path(Path.home(), "AppData", "Roaming", "Medal")
 
@@ -148,7 +160,7 @@ for path in medalPath.iterdir():
         
         if path.stem[nIndex].isnumeric(): # ignores medal-guest.db and CustomGameDatabase.db
             dbPath = medalPath / path.name
-            print(f"Path to database: {dbPath}")
+            print(f"\nPath to database: {dbPath}")
             
             break
 
@@ -195,6 +207,8 @@ for id, path, metadata in resultSet:
     if oldCopiedClips.get(id) is not None:
         clip.path = Path(oldCopiedClips.get(id))
         clipList.append(clip)
+
+        print(f"Found '{clip.path.stem}'")
 
         continue
 
@@ -256,29 +270,41 @@ for id, path, metadata in resultSet:
     clip.path = clipsDir / (title + fileExtension)
     clipList.append(clip)
 
-print(f"\nFinished sorting through clips (found {len(clipList)}). Now copying...\n")
+print(f"Finished sorting through clips (found {len(clipList)})")
 db.close()
+
+if len(clipList) == 0: endScript()
 
 
 # copy/download new clips
 newClips = tuple(clip for clip in clipList if clip.isNew)
-remoteClipList = []
+remoteClips = []
 copyCount = 0
+
+print("\nChecking if there are any new clips to copy or download...")
+
+if not newClips: print("No new clips have been found\n")
+else: print()
+
 
 for clip in newClips:
     if clip.link is None:
-        print(f"Copying '{clip.path.name}'...")
+        print(f"Copying '{clip.path.stem}'...")
 
         clip.ogPath.copy(clip.path, preserve_metadata = True)
         copyCount += 1
 
     else:
-        remoteClipList.append(clip)
+        remoteClips.append(clip)
 
-print(f"\nFinished copying {copyCount} clips. Now downloading...\n")
+if copyCount:
+    print(f"Finished copying {copyCount} clip{plural(copyCount)}\n")
 
-downloadClips(remoteClipList)
-print(f"\nFinished downloading {len(remoteClipList)} clips")
+if remoteClips:
+    print(f"Downloading {len(remoteClips)} clip{plural(len(remoteClips))}, this might take a while...\n")
+
+    downloadClips(remoteClips)
+    print(f"Finished downloading {len(remoteClips)} clip{plural(len(remoteClips))}\n")
 
 
 # delete outdated clips
@@ -290,7 +316,8 @@ for id in oldCopiedClips:
         Path(oldCopiedClips[id]).unlink()
         outdatedCount += 1
 
-print(f"Found and deleted {outdatedCount} outdated clips")
+if outdatedCount:
+    print(f"Found and deleted {outdatedCount} outdated clip{plural(outdatedCount)}\n")
 
 
 # generate JSON file to differentiate between user-created "Named-clips" folders,
@@ -307,7 +334,7 @@ if platform == "win32":
     subprocess.run(["attrib", "+H", jsonPath], check=True)
 
 print(f"Generated JSON file successfully")
-print("Exiting...\n")
+endScript()
 
 
 '''
