@@ -240,7 +240,7 @@ for id, path, metadata in resultSet:
 
     else:
         clip.link = decodeStrType( # start search after the title to prevent any error due to user input
-            metadata, metadata.index(b"contentShareUrl", titlePos + len(title.encode("utf-8")))
+            metadata, metadata.index(b"contentShareUrl", titlePos + len(title.encode("utf-8"))) + len("contentShareUrl")
         )
         
         fileExtension = queryFileExtension(clip.link) 
