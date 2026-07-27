@@ -8,7 +8,6 @@ from sys import platform
 
 
 class Clips:
-    copyCount = 0
     ogTitles = [] # used to see how many times a title repeats
 
     def __init__(self, id):
@@ -193,7 +192,6 @@ for id, path, metadata in resultSet:
     print(f"Found '{title}'")
 
     Clips.ogTitles.append(title)
-    Clips.copyCount += 1
     clip.isNew = True
 
 
@@ -236,27 +234,30 @@ for id, path, metadata in resultSet:
             raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated")
 
 
-    clip.title = title
     clip.path = clipsDir / (title + fileExtension)
     clipList.append(clip)
 
-print(f"\nFinished sorting through clips\n")
+print(f"\nFinished sorting through clips (found {len(clipList)}). Now copying...\n")
 db.close()
 
 
 # copy new clips
-clipsToCopy = {clip.id: str(clip.path) for clip in clipList if clip.isNew}
+newClips = tuple(clip for clip in clipList if clip.isNew)
+copyCount = 0
 
-for clip in clipsToCopy:
-    print(f"Copying '{clip.title}'...")
-    clip.ogPath.copy(clip.path, preserve_metadata = True)
+for clip in newClips:
+    if clip.link is None:
+        print(f"Copying '{clip.path.name}'...")
 
-print(f"\nCopied {Clips.copyCount}/{len(clipList)} clips")
+        clip.ogPath.copy(clip.path, preserve_metadata = True)
+        copyCount += 1
+
+print(f"\nFinished copying {copyCount} clips\n")
 
 
 # delete outdated clips
-outdatedCount = 0
 clipIds = tuple(clip.id for clip in clipList)
+outdatedCount = 0
 
 for id in oldCopiedClips:
     if id not in clipIds:
@@ -273,7 +274,7 @@ if platform == "win32" and jsonPath.exists(): # Windows
     subprocess.run(["attrib", "-H", jsonPath], check=True) # temporarily make the file visible again so i have write permissions
 
 with open(jsonPath, "w") as fJSON:
-    json.dump(clipsToCopy, fJSON, indent = "\t")
+    json.dump({clip.id: str(clip.path) for clip in clipList}, fJSON, indent = "\t")
 
 if platform == "win32": 
     # hide the file to disencourage edits/deletion
