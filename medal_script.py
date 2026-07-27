@@ -63,14 +63,11 @@ def getPreviousDir():
 
 
 # title related
-def findTitlePos(metadata, key_titlePos):
-    try:
-        untitledPos = metadata.index(b"Untitled")
+def getTitleIDPos(metadata):
+    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
 
-    except ValueError:
-        pass
 
-    else:
+    if (untitledPos := metadata.find(b"Untitled")) != -1:
         # for imported clips, a key called "contentTitle" will always be "Untitled", and never change,
         # and for clips that are manually imported, the "title" key will be at the end. Since the word
         # "title" is in "Untitled", i need to start the index search after that word
@@ -78,7 +75,7 @@ def findTitlePos(metadata, key_titlePos):
         if untitledPos + 2 == key_titlePos:
             titleIDPos = metadata.index(b"title", key_titlePos + 1) + len("title")
             return titleIDPos
-
+        
     titleIDPos = metadata.index(b"title") + len("title")
     return titleIDPos
 
@@ -122,7 +119,7 @@ def decodeStrType(metadata, strIDPos):
         strLen = sizeID
         strPos = strIDPos + 1
 
-    return metadata[strPos : strPos + strLen].decode("utf-8")
+    return metadata[strPos : strPos + strLen].decode("utf-8"), strPos
 
 
 # remote related
@@ -214,13 +211,10 @@ for id, path, metadata in resultSet:
 
 
     # get the title
-    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
-    titleIDPos = findTitlePos(metadata, key_titlePos)
+    titleIDPos = getTitleIDPos(metadata)
 
-    title = decodeStrType(metadata, titleIDPos)
-    
-    if title is None:
-        continue
+    title, titlePos = decodeStrType(metadata, titleIDPos)
+    if title is None: continue
         
     print(f"Found '{title}'")
 
@@ -237,7 +231,7 @@ for id, path, metadata in resultSet:
 
     else:
         clip.link = decodeStrType( # start search after the title to prevent any error due to user input
-            metadata, metadata.index(b"contentShareUrl", key_titlePos + 1) + len("contentShareUrl")
+            metadata, metadata.index(b"contentShareUrl", titlePos + len(title.encode("utf-8")))
         )
         
         fileExtension = queryFileExtension(clip.link) 
