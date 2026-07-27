@@ -95,7 +95,8 @@ def decodeStrType(metadata, strIDPos):
     strID = normBin(metadata[strIDPos])
     sizeID = int(strID[:4], 2)
     
-    str8, str16 = int("C", 16), int("D", 16) 
+    str8, str16 = int("C", 16), int("D", 16)
+    unknownStrType = int("E", 16)
 
 
     # the length of the str is in the next byte
@@ -113,6 +114,10 @@ def decodeStrType(metadata, strIDPos):
 
         strLen = int(byte1 + byte2, 2)
         strPos = strIDPos + 3
+
+    elif sizeID >= unknownStrType:
+        UnknownStrType = Exception()
+        raise UnknownStrType(f"String type identified by '{hex(sizeID).replace("0x", "")}' is unknown")
 
     # the length of the str is the 1st nibble of the strID byte
     else:
