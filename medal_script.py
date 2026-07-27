@@ -307,7 +307,7 @@ if platform == "win32":
     subprocess.run(["attrib", "+H", jsonPath], check=True)
 
 print(f"Generated JSON file successfully")
-
+print("Exiting...\n")
 
 
 '''
