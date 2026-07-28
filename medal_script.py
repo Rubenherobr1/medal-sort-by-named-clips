@@ -18,6 +18,12 @@ class Clips:
         self.link = None
 
 
+# define exception names
+class DownloadFailedError(Exception): pass
+class PathSizeError(Exception): pass
+class UnknownStrTypeError(Exception): pass
+
+
 # pre-processing
 def getPreviousDir():
     jsonFileName = ".copied-clips.json"
@@ -116,7 +122,6 @@ def decodeStrType(metadata, strIDPos, yieldPos = False):
         strPos = strIDPos + 3
 
     elif sizeID >= unknownStrType:
-        UnknownStrTypeError = Exception()
         raise UnknownStrTypeError(f"String type identified by '{sizeID:x}' is unknown")
 
     # the length of the str is the 1st nibble of the strID byte
@@ -146,7 +151,6 @@ def downloadClips(remoteClipList):
     ydl.params["quiet"] = "false"
 
     if (errCode := ydl.download(remoteClipList)) != 0:
-        DownloadFailedError = Exception()
         raise DownloadFailedError(f"The download failed (code: '{errCode}')")
 
 
@@ -273,7 +277,6 @@ for metadata, id, path, imgPath in resultSet:
         title = title[:charsLeft] 
 
         if not title:
-            PathSizeError = Exception()
             raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated")
 
 
