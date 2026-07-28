@@ -139,7 +139,7 @@ def decodeStrType(metadata, strIDPos, yieldPos = False):
 def queryFileExtension(link):
     info = ydl.extract_info(link, download = False)
 
-    return info["formats"][0]["ext"]
+    return f".{info["formats"][0]["ext"]}"
 
 
 def downloadClips(remoteClipList):
