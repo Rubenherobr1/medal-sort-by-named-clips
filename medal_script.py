@@ -117,7 +117,7 @@ def decodeStrType(metadata, strIDPos, yieldPos = False):
 
     elif sizeID >= unknownStrType:
         UnknownStrTypeError = Exception()
-        raise UnknownStrTypeError(f"String type identified by '{hex(sizeID).replace("0x", "")}' is unknown")
+        raise UnknownStrTypeError(f"String type identified by '{sizeID:x}' is unknown")
 
     # the length of the str is the 1st nibble of the strID byte
     else:
