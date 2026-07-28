@@ -305,7 +305,7 @@ for clip in newClips:
         copyCount += 1
 
     else:
-        remoteClips.append(clip)
+        remoteClips.append(clip.link)
 
 if copyCount:
     print(f"Finished copying {copyCount} clip{plural(copyCount)}\n")
