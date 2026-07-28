@@ -116,8 +116,8 @@ def decodeStrType(metadata, strIDPos, yieldPos = False):
         strPos = strIDPos + 3
 
     elif sizeID >= unknownStrType:
-        UnknownStrType = Exception()
-        raise UnknownStrType(f"String type identified by '{hex(sizeID).replace("0x", "")}' is unknown")
+        UnknownStrTypeError = Exception()
+        raise UnknownStrTypeError(f"String type identified by '{hex(sizeID).replace("0x", "")}' is unknown")
 
     # the length of the str is the 1st nibble of the strID byte
     else:
@@ -146,8 +146,8 @@ def downloadClips(remoteClipList):
     ydl.params["quiet"] = "false"
 
     if (errCode := ydl.download(remoteClipList)) != 0:
-        DownloadFailed = Exception()
-        raise DownloadFailed(f"The download failed (code: '{errCode}')")
+        DownloadFailedError = Exception()
+        raise DownloadFailedError(f"The download failed (code: '{errCode}')")
 
 
 # utility functions
