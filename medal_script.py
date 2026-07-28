@@ -91,7 +91,7 @@ def normBin(decimalByte):
     return byte
 
 
-def decodeStrType(metadata, strIDPos):
+def decodeStrType(metadata, strIDPos, yieldPos = False):
     strID = normBin(metadata[strIDPos])
     sizeID = int(strID[:4], 2)
     
@@ -122,12 +122,17 @@ def decodeStrType(metadata, strIDPos):
     # the length of the str is the 1st nibble of the strID byte
     else:
         if sizeID == 0:
-            return None
+            if not yieldPos: return None
+            else: return None, None
         
         strLen = sizeID
         strPos = strIDPos + 1
 
-    return metadata[strPos : strPos + strLen].decode("utf-8"), strPos
+
+    txt = metadata[strPos : strPos + strLen].decode("utf-8")
+
+    if not yieldPos: return txt
+    else: return txt, strPos
 
 
 # remote related
@@ -222,7 +227,7 @@ for id, path, metadata in resultSet:
     titleIDPos = getTitleIDPos(metadata)
     if titleIDPos is None: continue
 
-    title, titlePos = decodeStrType(metadata, titleIDPos)
+    title, titlePos = decodeStrType(metadata, titleIDPos, yieldPos = True)
     if title is None: continue
         
     print(f"Found '{title}'")
