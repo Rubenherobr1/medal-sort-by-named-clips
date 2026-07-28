@@ -129,7 +129,7 @@ def decodeStrType(metadata, strIDPos, yieldPos = False):
         strPos = strIDPos + 1
 
 
-    txt = metadata[strPos : strPos + strLen].decode("utf-8")
+    txt = metadata[strPos : strPos + strLen].decode()
 
     if not yieldPos: return txt
     else: return txt, strPos
