@@ -175,9 +175,9 @@ for path in medalPath.iterdir():
             break
 
 
-# connect to sqlite database and get the video id, path and it's metadata
+# connect to sqlite database and get the video metadata, path and id + the image path to check if it's an image or video
 db = sqlite.connect(dbPath) 
-resultSet = db.execute("SELECT local_content_id, video_path, metadata FROM contents")
+resultSet = db.execute("SELECT metadata, local_content_id, video_path, image_path FROM contents")
 
 print("Connected to database and executed query\n")
 
@@ -210,8 +210,10 @@ ydl = ytdlp.YoutubeDL(config)
 MAX_PATH_LEN = 260 # on Windows
 clipList = []
 
-for id, path, metadata in resultSet: 
+for metadata, id, path, imgPath in resultSet: 
     clip = Clips(id)
+
+    if imgPath: continue # if it's a screenshot, by example
 
     # check if the clip is arleady in the directory
     if oldCopiedClips.get(id) is not None:
