@@ -350,12 +350,4 @@ print(f"Generated JSON file successfully")
 endScript()
 
 
-'''
-TODO:
-- Add minimum storage recomendation/requirement
-- Add "instalation" and "usage" section to README (?)
-- Explain how the script works on README (summed up)
-- Maybe save the clips to an album on Medal
-'''
-
 
