@@ -291,6 +291,20 @@ db.close()
 if len(clipList) == 0: endScript()
 
 
+# delete outdated clips. if the previous directory didn't exist, there's no need to check for them
+if previousDir: 
+    clipIds = tuple(clip.id for clip in clipList)
+    outdatedCount = 0
+
+    for id in oldCopiedClips:
+        if id not in clipIds:
+            Path(oldCopiedClips[id]).unlink()
+            outdatedCount += 1
+
+    if outdatedCount:
+        print(f"Found and deleted {outdatedCount} outdated clip{plural(outdatedCount)}\n")
+
+
 # copy/download new clips
 newClips = tuple(clip for clip in clipList if clip.isNew)
 remoteClips = []
@@ -320,19 +334,6 @@ if remoteClips:
 
     downloadClips(remoteClips)
     print(f"Finished downloading {len(remoteClips)} clip{plural(len(remoteClips))}\n")
-
-
-# delete outdated clips
-clipIds = tuple(clip.id for clip in clipList)
-outdatedCount = 0
-
-for id in oldCopiedClips:
-    if id not in clipIds:
-        Path(oldCopiedClips[id]).unlink()
-        outdatedCount += 1
-
-if outdatedCount:
-    print(f"Found and deleted {outdatedCount} outdated clip{plural(outdatedCount)}\n")
 
 
 # generate JSON file to differentiate between user-created "Named-clips" folders,
