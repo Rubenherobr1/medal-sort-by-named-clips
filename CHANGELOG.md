@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org).
 
 
+## [1.0.1] - 2026-07-30
+
+### What's new
+
+- Rename custom exceptions to match bult-in exceptions
+- Clips arleady in the generated json file are now skipped
+- Group related variables into a "Clips" class and postpone their declaration when
+possible
+- Make the "Notes" stand out more in the terminal
+- Handle unknown sizeID values in case they arrise (due to possibly varying link sizes)
+- Renamed variable names inside decodeTitle to generalize them, and rename the function
+to decodeStrType
+- Standardized variable names (from "-files" to "-clips")
+- Order functions by their appearance within the script
+- Improve README.md
+- Improve comments and text printed to the terminal
+
+### Fixed
+
+- Custom exceptions are now defined correctly
+- Images are now skipped
+- Cases where the title key doesen't exist are now properly handled
+- Clips that are new are now appended to clipList
+- When the path is None, the clips' suffix is queried (online) and the clips themselves 
+are now downloaded
+- The suffix that's added for clips with the same name is now a required part of 
+the path
+- Title is now properly found in clips that were imported manually
+- Database connection is now properly closed
+- The remote id for the clips was sometimes null (switched to local id)
+
+
 ## [1.0.0] - 2026-07-22
 
 ### What's new
@@ -79,6 +111,7 @@ python libraries
 
 
 
+[1.0.1]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v1.0.1
 [1.0.0]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v1.0.0
 [0.4.0]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v0.4.0
 [0.3.0]: https://github.com/rubenherobr1/medal-sort-by-named/releases/tag/v0.3.0
