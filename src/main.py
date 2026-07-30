@@ -151,7 +151,7 @@ def downloadClips(remoteClipList):
     ydl.params["quiet"] = "false"
 
     if (errCode := ydl.download(remoteClipList)) != 0:
-        raise DownloadFailedError(f"The download failed (code: '{errCode}')")
+        raise DownloadFailedError(f"The download failed ({errCode})")
 
 
 # utility functions
@@ -279,7 +279,7 @@ for metadata, id, path, imgPath in resultSet:
         title = title[:charsLeft] 
 
         if not title:
-            raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated")
+            raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated:\n{clipsDir / (title + fileExtension)}")
 
 
     clip.path = clipsDir / (title + fileExtension)
