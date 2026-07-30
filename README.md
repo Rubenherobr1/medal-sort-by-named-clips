@@ -9,6 +9,7 @@ clips aren't renamed to what name you give them inside Medal.
 
 **Note**: This is NOT an official script from Medal.
 
+
 ## What versions are supported
 
 This script was developed for the following versions:
@@ -17,19 +18,30 @@ This script was developed for the following versions:
 
 To check your version, go to **Settings** and **scroll down**. It should be at the bottom.
 
+
+## Issues that might happen
+
+### Updating or downgrading Medal
+
 The script may or may not work in future or past versions. If you think it does not work in your version,
 feel free to open a PR or an issue so i can see what i can do!
 
+### Changing devices
 
-## Other issues that might happen
+It is likely that if you change devices and simply copy-paste the generated folder onto your new device,
+the script's "syncing" (deleting old clips and adding new ones) will 100% break, since it uses id's that
+are local to your device to sync.
 
-Due to the nature of this project, i can't say with 100% certainty that the script will not break
-if you **change devices**. Since i don't have 2 computers, i can't test for this.
+So, if you do, you should delete the old folder and execute the script again to generate a new one. 
 
-I recommend that if you do, you simply delete the old folder and execute the script again to generate
-a new folder. 
+### Manually imported clips' title
 
-If anyone wants to test it and tell me if any issues happened, feel free to open an issue!
+If you import a clip manually it will have the clip's filename as it's title, just how it appears on Medal
+iself. So, all i can do for that case is ignore clips with a certain format in their filenames that are
+automaticly generated in the same way (like how gamebar clips always have the "window_name date time" format).
+
+If you want me to add support for a specific format open an issue!
+
 
 # Deleting the generated JSON file WILL break things.
 
