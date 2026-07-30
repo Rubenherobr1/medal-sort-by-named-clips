@@ -194,7 +194,6 @@ if previousDir:
         oldCopiedClips = json.load(fJSON)
 
 else:
-    clipsDir.mkdir()
     oldCopiedClips = {} # what is expected to be outputed if i load a JSON file with an empty dict
 
 
@@ -291,7 +290,7 @@ db.close()
 if len(clipList) == 0: endScript()
 
 
-# delete outdated clips. if the previous directory didn't exist, there's no need to check for them
+# delete outdated clips. if the previous directory didn't exist, create it, and don't check if there's any outdated clips
 if previousDir: 
     clipIds = tuple(clip.id for clip in clipList)
     outdatedCount = 0
@@ -303,6 +302,9 @@ if previousDir:
 
     if outdatedCount:
         print(f"Found and deleted {outdatedCount} outdated clip{plural(outdatedCount)}\n")
+
+else:
+    clipsDir.mkdir()
 
 
 # copy/download new clips
