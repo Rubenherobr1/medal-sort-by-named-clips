@@ -10,7 +10,7 @@ clips aren't renamed to what name you give them inside Medal.
 **Note**: This is NOT an official script from Medal.
 
 
-## What versions are supported
+## Known supported versions
 
 This script was developed for the following versions:
 - **Latest Stable:** 2629.329.1
@@ -43,6 +43,6 @@ automaticly generated in the same way (like how gamebar clips always have the "w
 If you want me to add support for a specific format open an issue!
 
 
-# Deleting the generated JSON file WILL break things.
+# Deleting the generated JSON file WILL break things
 
 
