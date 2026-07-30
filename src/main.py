@@ -205,7 +205,9 @@ config = {
     "overwrites": "false", # don't overwrite other files
     "paths": {
         "home": str(clipsDir) # the default path to put the downloads in
-    }
+    },
+    "sleep_interval_requests": 1, # number of seconds to sleep before each download
+    "sleep_interval": 5 # number of seconds to sleep between requests (during extraction)
 }
 
 ydl = ytdlp.YoutubeDL(config)
