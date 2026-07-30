@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [1.0.1] - 2026-07-30
 
-**Special thanks**: @HeartzzSamm, for providing their database, that served as an actual dataset. 
+**Special thanks**: [@HeartzzSamm](https://github.com/HeartzzSamm), for providing their database, that served as an actual dataset. 
 Without it, i wouldn't be able to detect and fix this many bugs.
 
 ### What's new
