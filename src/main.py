@@ -1,11 +1,10 @@
 import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
-import subprocess
+import os_specific as ospec # custom module
 import json
 import sys
 
 from pathlib import Path
-from sys import platform
 
 
 class Clips:
@@ -212,7 +211,6 @@ config = {
 ydl = ytdlp.YoutubeDL(config)
 
 # parse the db result set
-MAX_PATH_LEN = 260 # on Windows
 clipList = []
 
 for metadata, id, path, imgPath in resultSet: 
@@ -271,14 +269,14 @@ for metadata, id, path, imgPath in resultSet:
     # check if the title is too long
     minPathLen = len(str(clipsDir)) + len(fileExtension) + len(suffix)
 
-    if minPathLen + len(title) > MAX_PATH_LEN:
+    if minPathLen + len(title) > ospec.MAX_PATH_LEN:
         print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
-        charsLeft = MAX_PATH_LEN - minPathLen
+        charsLeft = ospec.MAX_PATH_LEN - minPathLen
         title = title[:charsLeft] 
 
         if not title:
-            raise PathSizeError(f"The resulting path is too big (>{MAX_PATH_LEN}), even if the file name is truncated:\n{clipsDir / (title + fileExtension)}")
+            raise PathSizeError(f"The resulting path is too big (>{ospec.MAX_PATH_LEN}), even if the file name is truncated:\n{clipsDir / (title + fileExtension)}")
 
 
     clip.path = clipsDir / (title + fileExtension)
@@ -341,15 +339,12 @@ if remoteClips:
 # generate JSON file to differentiate between user-created "Named-clips" folders,
 # to check if there are outdated clips or if a clips is arleady in the directory
 
-if platform == "win32" and jsonPath.exists(): # Windows
-    subprocess.run(["attrib", "-H", jsonPath], check=True) # temporarily make the file visible again so i have write permissions
+ospec.revealFile(jsonPath)
 
 with open(jsonPath, "w") as fJSON:
     json.dump({clip.id: str(clip.path) for clip in clipList}, fJSON, indent = "\t")
 
-if platform == "win32": 
-    # hide the file to disencourage edits/deletion
-    subprocess.run(["attrib", "+H", jsonPath], check=True)
+ospec.hideFile(jsonPath)
 
 print(f"Generated JSON file successfully")
 endScript()
