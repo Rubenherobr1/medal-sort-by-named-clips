@@ -43,6 +43,14 @@ automaticly generated in the same way (like how gamebar clips always have the "w
 If you want me to add support for a specific format open an issue!
 
 
+## Special thanks
+
+Special thanks to **@HeartzzSamm** for sharing their database so i could use an actual dataset from someone that uses Medal
+often. It allowed me to fix lots of bugs that i wouldn't even be able to known they would happen.
+
+Also, this project was done for -user-'s use case, so thanks for giving this idea aswell!
+
+
 # Deleting the generated JSON file WILL break things
 
 
