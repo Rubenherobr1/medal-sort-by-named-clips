@@ -3,9 +3,9 @@
 Do you usually give a memorable name to Medal clips that are amazing, and don't name the other
 clips that you have? Have you ever wanted to see only the clips that you gave a name to?
 
-This python script does exactly that: it only gets the clips that are named, and saves it to 
-somewhere **(TBD)**, since Medal dosen't give that filter option, and the video files for the 
-clips aren't renamed to what name you give them inside Medal. 
+This python script does exactly that: it only gets the clips that are named, and copies them to
+a folder, since Medal dosen't give that filter option, and the video files for the clips aren't
+renamed to what name you give them inside Medal. 
 
 **Note**: This is NOT an official script from Medal.
 
