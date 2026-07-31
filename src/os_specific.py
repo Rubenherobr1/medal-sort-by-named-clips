@@ -18,16 +18,22 @@ def hideFile(filePath):
 
 
 # check if the title is repeated
-def checkRepeatedTitle(ogTitles, title):
-    ogTitles.append(title)
+def make_checkRepeatedTitle():
+    ogTitles = [] # used to see how many times a title repeats
 
-    if (nRepeats := ogTitles.count(title)) > 1:
-        suffix = f"-{nRepeats}"
-        print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
+    def checkRepeatedTitle(title):
+        ogTitles.append(title)
 
-    else:
-        suffix = ""
+        if (nRepeats := ogTitles.count(title)) > 1:
+            suffix = f"-{nRepeats}"
+            print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
 
-    return suffix
+        else:
+            suffix = ""
 
-    
+        return suffix
+
+    return checkRepeatedTitle
+
+checkRepeatedTitle = make_checkRepeatedTitle()
+

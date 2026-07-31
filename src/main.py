@@ -8,8 +8,6 @@ from pathlib import Path
 
 
 class Clips:
-    ogTitles = [] # used to see how many times a title repeats
-
     def __init__(self, id):
         self.id = id
 
