@@ -24,7 +24,12 @@ def make_checkRepeatedTitle():
     ogTitles = [] # used to see how many times a title repeats
 
     def checkRepeatedTitle(title):
-        ogTitles.append(title)
+        # on windows, don't assume case sensitivity for filenames
+        if platform == "win32": ogTitle = title.casefold()
+        else: ogTitle = title
+
+        ogTitles.append(ogTitle)
+
 
         if (nRepeats := ogTitles.count(title)) > 1:
             suffix = f"-{nRepeats}"
