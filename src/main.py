@@ -236,8 +236,6 @@ for metadata, id, path, imgPath in resultSet:
     if title is None: continue
         
     print(f"Found '{title}'")
-
-    Clips.ogTitles.append(title)
     clip.isNew = True
 
 
@@ -257,14 +255,9 @@ for metadata, id, path, imgPath in resultSet:
         
         
     # check if the title is repeated
-    if (nRepeats := Clips.ogTitles.count(title)) > 1:
-        suffix = f"-{nRepeats}"
-        print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
+    suffix = ospec.checkRepeatedTitle(Clips.ogTitles, title)
+    if suffix: title += suffix
 
-        title += suffix
-        
-    else:
-        suffix = ""
 
     # check if the title is too long
     minPathLen = len(str(clipsDir)) + len(fileExtension) + len(suffix)
