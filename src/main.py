@@ -260,18 +260,22 @@ for metadata, id, path, imgPath in resultSet:
 
     # check if the title is too long
     minPathLen = len(str(clipsDir)) + len(fileExtension) + len(suffix)
-
-    if minPathLen + len(title) > ospec.MAX_PATH_LEN:
+    clip.path = clipsDir / (title + fileExtension)
+        
+    if len(str(clip.path)) > ospec.MAX_PATH_LEN:
         print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
         charsLeft = ospec.MAX_PATH_LEN - minPathLen
         title = title[:charsLeft] 
 
         if not title:
-            raise PathSizeError(f"The resulting path is too big (>{ospec.MAX_PATH_LEN}), even if the file name is truncated:\n{clipsDir / (title + fileExtension)}")
+            raise PathSizeError(
+                f"The resulting path is too big (>{ospec.MAX_PATH_LEN}), even if the file name is truncated:\n{clip.path}"
+            )
+
+        clip.path = clipsDir / (title + fileExtension)
 
 
-    clip.path = clipsDir / (title + fileExtension)
     clipList.append(clip)
 
 print(f"Finished sorting through clips (found {len(clipList)})")
