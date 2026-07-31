@@ -21,7 +21,7 @@ class PathSizeError(Exception): pass
 class UnknownStrTypeError(Exception): pass
 
 
-# pre-processing
+# -pre-processing-
 def getPreviousDir():
     jsonFileName = ".copied-clips.json"
     clipsDirName = "Named_clips"
@@ -65,7 +65,7 @@ def getPreviousDir():
     return False, jsonPath, clipsDir
 
 
-# title related
+# -title related-
 def getTitleIDPos(metadata):
     key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
 
@@ -86,7 +86,7 @@ def getTitleIDPos(metadata):
         return None
 
 
-# decoding related
+# -decoding related-
 def normBin(decimalByte):
     byte = bin(decimalByte).replace("0b", "")
     byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
@@ -137,7 +137,7 @@ def decodeStrType(metadata, strIDPos, yieldPos = False):
     else: return txt, strPos
 
 
-# remote related
+# -remote related-
 def queryFileExtension(link):
     info = ydl.extract_info(link, download = False)
 
@@ -207,6 +207,7 @@ config = {
 }
 
 ydl = ytdlp.YoutubeDL(config)
+
 
 # parse the db result set
 clipList = []
