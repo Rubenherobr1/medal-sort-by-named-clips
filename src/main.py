@@ -257,7 +257,7 @@ for metadata, id, path, imgPath in resultSet:
         
         
     # check if the title is repeated
-    suffix = ospec.checkRepeatedTitle(Clips.ogTitles, title)
+    suffix = ospec.checkRepeatedTitle(title)
     if suffix: title += suffix
 
 
