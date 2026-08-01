@@ -237,6 +237,8 @@ for metadata, id, path, imgPath in resultSet:
     print(f"Found '{title}'")
     clip.isNew = True
 
+    title = ospec.sanitizeTitle(title)
+
 
     # check if the clip is remote
     if path is not None:
