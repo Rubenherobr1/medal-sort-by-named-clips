@@ -3,7 +3,7 @@ import sys
 import os
 
 
-def getTitleIDPos(metadata):
+def getIDPos(metadata):
     key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
 
     try:
@@ -23,7 +23,7 @@ def getTitleIDPos(metadata):
         return None
 
 
-def make_sanitizeTitle():
+def make_sanitize():
     fakeChars = { # fullwidth variants of the restricted filename charecters
         "/": "\uff0f",
         ">": "\uff1e",
@@ -56,7 +56,7 @@ def make_sanitizeTitle():
     bannedChars = fakeChars.keys()
 
 
-    def sanitizeTitle(title):
+    def sanitize(title):
         for bannedChar in bannedChars:
             if bannedChar in title:
                 for _ in range(title.count(bannedChar)):
@@ -70,18 +70,18 @@ def make_sanitizeTitle():
             elif title.endswith(" "):
                 title = title.strip()
 
-    return sanitizeTitle
+    return sanitize
 
-sanitizeTitle = make_sanitizeTitle()
+sanitize = make_sanitize()
 
         
 # -checks-
 
 # check if the title is repeated
-def make_checkRepeatedTitle():
+def make_checkRepeated():
     ogTitles = [] # used to see how many times a title repeats
 
-    def checkRepeatedTitle(title):
+    def checkRepeated(title):
         # on windows, don't assume case sensitivity for filenames
         if sys.platform == "win32": ogTitle = title.casefold()
         else: ogTitle = title
@@ -98,9 +98,9 @@ def make_checkRepeatedTitle():
 
         return suffix
 
-    return checkRepeatedTitle
+    return checkRepeated
 
-checkRepeatedTitle = make_checkRepeatedTitle()
+checkRepeated = make_checkRepeated()
 
 
 # check if the title is too long

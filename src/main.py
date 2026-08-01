@@ -1,6 +1,6 @@
 import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
-import handle_title as title # custom module
+import handle_title as htitle # custom module
 import subprocess
 import json
 import sys
@@ -208,7 +208,7 @@ for metadata, id, path, imgPath in resultSet:
 
 
     # get the title
-    titleIDPos = getTitleIDPos(metadata)
+    titleIDPos = htitle.getIDPos(metadata)
     if titleIDPos is None: continue
 
     title, titlePos = decodeStrType(metadata, titleIDPos, yieldPos = True)
@@ -217,7 +217,7 @@ for metadata, id, path, imgPath in resultSet:
     print(f"Found '{title}'")
     clip.isNew = True
 
-    title = ospec.sanitizeTitle(title)
+    title = htitle.sanitize(title)
 
 
     # check if the clip is remote
@@ -239,7 +239,7 @@ for metadata, id, path, imgPath in resultSet:
         
         
     # check if the title is repeated
-    suffix = ospec.checkRepeatedTitle(title)
+    suffix = htitle.checkRepeated(title)
     if suffix: title += suffix
 
 
@@ -247,15 +247,15 @@ for metadata, id, path, imgPath in resultSet:
     minPathLen = len(str(clipsDir)) + len(fileExtension) + len(suffix)
     clip.path = clipsDir / (title + fileExtension)
         
-    if len(str(clip.path)) > ospec.MAX_PATH:
+    if len(str(clip.path)) > htitle.MAX_PATH:
         print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
-        charsLeft = ospec.MAX_PATH - minPathLen
+        charsLeft = htitle.MAX_PATH - minPathLen
         title = title[:charsLeft] 
 
         if not title:
             raise PathSizeError(
-                f"The resulting path is too big (>{ospec.MAX_PATH}), even if the file name is truncated:\n" /
+                f"The resulting path is too big (>{htitle.MAX_PATH}), even if the file name is truncated:\n" /
                 clip.path
             )
 
