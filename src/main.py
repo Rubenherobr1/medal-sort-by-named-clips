@@ -1,11 +1,13 @@
 import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
-import handle_title as htitle # custom module
 import subprocess
 import json
 import sys
 
 from pathlib import Path
+
+# custom modules
+import handle_title as htitle # custom module
 
 
 class Clips:
