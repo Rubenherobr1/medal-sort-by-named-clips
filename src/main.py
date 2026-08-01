@@ -1,6 +1,6 @@
 import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
-import os_specific as ospec # custom module
+import handle_title as title # custom module
 import json
 import sys
 
@@ -63,27 +63,6 @@ def getPreviousDir():
             break
 
     return False, jsonPath, clipsDir
-
-
-# -title related-
-def getTitleIDPos(metadata):
-    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
-
-    try:
-        if (untitledPos := metadata.find(b"Untitled")) != -1:
-            # for imported clips, a key called "contentTitle" will always be "Untitled", and never change,
-            # and for clips that are manually imported, the "title" key will be at the end. Since the word
-            # "title" is in "Untitled", i need to start the index search after that word
-
-            if untitledPos + 2 == key_titlePos:
-                titleIDPos = metadata.index(b"title", key_titlePos + 1) + len("title")
-                return titleIDPos
-            
-        titleIDPos = metadata.index(b"title") + len("title")
-        return titleIDPos
-
-    except ValueError: # if no title key is found
-        return None
 
 
 # -decoding related-
