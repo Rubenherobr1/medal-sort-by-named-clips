@@ -246,7 +246,10 @@ for metadata, id, path, imgPath in resultSet:
         fileExtension = path.suffix
 
     else:
-        clip.link = decodeStrType( # start search after the title to prevent any error due to user input
+        # start search after the utf-8 encded title (could have more bytes 
+        # on non-ASCII chars) to prevent any error due to user input
+
+        clip.link = decodeStrType( 
             metadata, metadata.index(b"contentShareUrl", titlePos + len(title.encode("utf-8"))) + len("contentShareUrl")
         )
         
@@ -270,7 +273,8 @@ for metadata, id, path, imgPath in resultSet:
 
         if not title:
             raise PathSizeError(
-                f"The resulting path is too big (>{ospec.MAX_PATH_LEN}), even if the file name is truncated:\n{clip.path}"
+                f"The resulting path is too big (>{ospec.MAX_PATH_LEN}), even if the file name is truncated:\n" /
+                clip.path
             )
 
         clip.path = clipsDir / (title + fileExtension)
