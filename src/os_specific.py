@@ -7,8 +7,9 @@ from sys import platform
 
 # -file visibility-
 def revealFile(filePath):
-    if platform == "win32" and filePath.exists(): # Windows
-        subprocess.run(["attrib", "-H", filePath], check=True) # temporarily make the file visible again so i have write permissions
+    if platform == "win32" and filePath.exists():
+        # temporarily make the file visible again so i have write permissions
+        subprocess.run(["attrib", "-H", filePath], check=True) 
 
 
 def hideFile(filePath):
@@ -103,4 +104,5 @@ def make_checkRepeatedTitle():
     return checkRepeatedTitle
 
 checkRepeatedTitle = make_checkRepeatedTitle()
+
 
