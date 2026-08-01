@@ -1,9 +1,9 @@
 # this module will include the filename sanitizing and hiding the json file part of the script, which is specific to different OS's
 import subprocess
+import os
+
 from sys import platform
 
-
-MAX_PATH_LEN = 260 # on Windows
 
 # -file visibility-
 def revealFile(filePath):
@@ -18,6 +18,14 @@ def hideFile(filePath):
 
 
 # -filename and path restrictions-
+if platform == "win32":
+    MAX_FILENAME = 255
+    MAX_PATH = 260 - 1 # not counting the null terminator    
+
+else: # unix based systems
+    MAX_FILENAME = os.pathconf("/", "PC_NAME_MAX")  
+    MAX_PATH = os.pathconf("/", "PC_PATH_MAX")
+      
 
 # check if the title is repeated
 def make_checkRepeatedTitle():
