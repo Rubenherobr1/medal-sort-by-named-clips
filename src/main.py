@@ -1,6 +1,7 @@
 import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 import handle_title as title # custom module
+import subprocess
 import json
 import sys
 
@@ -320,12 +321,18 @@ if remoteClips:
 # generate JSON file to differentiate between user-created "Named-clips" folders,
 # to check if there are outdated clips or if a clips is arleady in the directory
 
-ospec.revealFile(jsonPath)
+if sys.platform == "win32" and jsonPath.exists():
+    # temporarily make the file visible again so i have write permissions
+    subprocess.run(["attrib", "-H", jsonPath], check=True) 
+
 
 with open(jsonPath, "w") as fJSON:
     json.dump({clip.id: str(clip.path) for clip in clipList}, fJSON, indent = "\t")
 
-ospec.hideFile(jsonPath)
+
+if sys.platform == "win32": 
+    # hide the file to disencourage edits/deletion
+    subprocess.run(["attrib", "+H", jsonPath], check=True)
 
 print(f"Generated JSON file successfully")
 endScript()
