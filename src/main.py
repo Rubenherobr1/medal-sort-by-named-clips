@@ -17,7 +17,6 @@ class Clips:
         self.isNew = False
         self.link = None
 
-
 # define exception names
 class DownloadFailedError(Exception): pass
 class UnknownStrTypeError(Exception): pass
