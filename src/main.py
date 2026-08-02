@@ -3,11 +3,16 @@ import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 import subprocess
 import json
 import sys
+import re
 
 from pathlib import Path
 
 # custom modules
 import handle_title as htitle # custom module
+
+
+# FILTER FLAGS - flags that influence what titles are ignored (useful for ignoring auto-generated titles)
+ignoreDateTime = False # ignores clips with the date and time in their names
 
 
 class Clips:
@@ -212,7 +217,18 @@ for metadata, id, path, imgPath in resultSet:
     if titleIDPos is None: continue
 
     title, titlePos = decodeStrType(metadata, titleIDPos, yieldPos = True)
-    if title is None: continue
+
+    if title is None: 
+        continue
+
+    elif ignoreDateTime: # refer to https://docs.python.org/3/library/re.html#regular-expression-syntax to understand the syntax
+        reDateISO = r"\d{4}[-\/]\d{2}[-\/]\d{2}"
+        reDate = r"\d{2}[-\/]\d{2}[-\/]\d{4}"
+        
+        reTime = r"\d{2}[-:]\d{2}[-:]\d{2}"
+
+        if re.search(f"({reDate}|{reDateISO}) {reTime}", title) is not None: 
+            continue
         
     print(f"Found '{title}'")
     clip.isNew = True
