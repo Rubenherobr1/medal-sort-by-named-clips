@@ -16,6 +16,8 @@ class Clips:
 
         self.isNew = False
         self.link = None
+        
+        self.ogPath: Path
 
 # define exception names
 class DownloadFailedError(Exception): pass
