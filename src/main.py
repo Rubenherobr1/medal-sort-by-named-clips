@@ -15,7 +15,7 @@ class Clips:
         self.id = id
 
         self.isNew = False
-        self.link = None
+        self.remoteLink = None
         
         self.ogPath: Path
 
@@ -26,7 +26,7 @@ class UnknownStrTypeError(Exception): pass
 
 # -pre-processing-
 def getPreviousDir():
-    jsonFileName = ".copied-clips.json"
+    jsonFileName = ".clips.json"
     clipsDirName = "Named_clips"
 
     # get a list of all clipsDir-like folders
@@ -170,10 +170,10 @@ previousDir, jsonPath, clipsDir = getPreviousDir()
 
 if previousDir:
     with open(jsonPath, "r") as fJSON:
-        oldCopiedClips = json.load(fJSON)
+        previousClips = json.load(fJSON)
 
 else:
-    oldCopiedClips = {} # what is expected to be outputed if i load a JSON file with an empty dict
+    previousClips = {} # what is expected to be outputed if i load a JSON file with an empty dict
 
 
 # set up class that handles remote clips
@@ -200,8 +200,8 @@ for metadata, id, path, imgPath in resultSet:
     if imgPath: continue # if it's a screenshot, by example
 
     # check if the clip is arleady in the directory
-    if oldCopiedClips.get(id) is not None:
-        clip.path = Path(oldCopiedClips.get(id))
+    if previousClips.get(id) is not None:
+        clip.path = Path(previousClips.get(id))
         clipList.append(clip)
 
         print(f"Found '{clip.path.stem}'")
@@ -233,11 +233,11 @@ for metadata, id, path, imgPath in resultSet:
         # start search after the utf-8 encded title (could have more bytes 
         # on non-ASCII chars) to prevent any error due to user input
 
-        clip.link = decodeStrType( 
+        clip.remoteLink = decodeStrType( 
             metadata, metadata.index(b"contentShareUrl", titlePos + len(title.encode("utf-8"))) + len("contentShareUrl")
         )
         
-        fileExtension = queryFileExtension(clip.link) 
+        fileExtension = queryFileExtension(clip.remoteLink) 
         
         
     # check if the title is repeated
@@ -266,9 +266,9 @@ if previousDir:
     clipIds = tuple(clip.id for clip in clipList)
     outdatedCount = 0
 
-    for id in oldCopiedClips:
+    for id in previousClips:
         if id not in clipIds:
-            Path(oldCopiedClips[id]).unlink()
+            Path(previousClips[id]).unlink()
             outdatedCount += 1
 
     if outdatedCount:
@@ -281,26 +281,26 @@ else:
 # copy/download new clips
 newClips = tuple(clip for clip in clipList if clip.isNew)
 remoteClips = []
-copyCount = 0
+hardlinkCount = 0
 
-print("\nChecking if there are any new clips to copy or download...")
+print("\nChecking if there are any new clips to link or download...")
 
 if not newClips: print("No new clips have been found\n")
 else: print()
 
 
 for clip in newClips:
-    if clip.link is None:
-        print(f"Copying '{clip.path.stem}'...")
+    if clip.remoteLink is None:
+        print(f"Creating a link to '{clip.path.stem}'...")
 
-        copyCount += 1
         clip.path.hardlink_to(clip.ogPath)
+        hardlinkCount += 1
 
     else:
-        remoteClips.append(clip.link)
+        remoteClips.append(clip.remoteLink)
 
-if copyCount:
-    print(f"Finished copying {copyCount} clip{plural(copyCount)}\n")
+if hardlinkCount:
+    print(f"Finished linking {hardlinkCount} clip{plural(hardlinkCount)}\n")
 
 if remoteClips:
     print(f"Downloading {len(remoteClips)} clip{plural(len(remoteClips))}, this might take a while...\n")
