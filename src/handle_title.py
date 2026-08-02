@@ -104,6 +104,8 @@ checkRepeated = make_checkRepeated()
 
 
 # check if the title is too long
+class PathSizeError(Exception): pass
+
 if sys.platform == "win32":
     MAX_FILENAME = 255
     MAX_PATH = 260 - 1 # not counting the null terminator    
@@ -111,5 +113,24 @@ if sys.platform == "win32":
 else: # unix based systems
     MAX_FILENAME = os.pathconf("/", "PC_NAME_MAX")  
     MAX_PATH = os.pathconf("/", "PC_PATH_MAX")
+
+
+def checkLen(relPath, title, minPathLen):
+        print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
+
+
+        if len(path) > MAX_PATH:
+            charsLeft = MAX_PATH - minPathLen
+            title = title[:charsLeft] 
+    
+            if not title:
+                raise PathSizeError(
+                    f"The resulting path is too big (>{MAX_PATH}), even if the file name is truncated:\n" /
+                    path
+                )
+    
+        return title
+
+    return None
 
 

@@ -20,7 +20,6 @@ class Clips:
 
 # define exception names
 class DownloadFailedError(Exception): pass
-class PathSizeError(Exception): pass
 class UnknownStrTypeError(Exception): pass
 
 
@@ -249,19 +248,8 @@ for metadata, id, path, imgPath in resultSet:
     minPathLen = len(str(clipsDir)) + len(suffix) + len(fileExtension)
     clip.path = clipsDir / (title + fileExtension)
         
-    if len(str(clip.path)) > htitle.MAX_PATH:
-        print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
-
-        charsLeft = htitle.MAX_PATH - minPathLen
-        title = title[:charsLeft] 
-
-        if not title:
-            raise PathSizeError(
-                f"The resulting path is too big (>{htitle.MAX_PATH}), even if the file name is truncated:\n" /
-                clip.path
-            )
-
-        clip.path = clipsDir / (title + fileExtension)
+    if (newTitle := htitle.checkLen(clip.path, minPathLen, title)) is not None:
+        clip.path = clipsDir / (newTitle + fileExtension)
 
 
     clipList.append(clip)
