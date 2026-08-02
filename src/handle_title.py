@@ -116,8 +116,11 @@ else: # unix based systems
 
 
 def checkLen(relPath, title, minPathLen):
+    if len(title) > MAX_FILENAME or len(path) > MAX_PATH:
         print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
+        if len(title) > MAX_FILENAME:
+            title = title[:(MAX_FILENAME - 1)]
 
         if len(path) > MAX_PATH:
             charsLeft = MAX_PATH - minPathLen
