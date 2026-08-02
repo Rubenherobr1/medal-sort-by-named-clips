@@ -246,7 +246,7 @@ for metadata, id, path, imgPath in resultSet:
 
 
     # check if the title is too long
-    minPathLen = len(str(clipsDir)) + len(fileExtension) + len(suffix)
+    minPathLen = len(str(clipsDir)) + len(suffix) + len(fileExtension)
     clip.path = clipsDir / (title + fileExtension)
         
     if len(str(clip.path)) > htitle.MAX_PATH:
