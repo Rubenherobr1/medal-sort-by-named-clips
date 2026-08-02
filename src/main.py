@@ -291,8 +291,8 @@ for clip in newClips:
     if clip.link is None:
         print(f"Copying '{clip.path.stem}'...")
 
-        clip.ogPath.copy(clip.path, preserve_metadata = True)
         copyCount += 1
+        clip.path.hardlink_to(clip.ogPath)
 
     else:
         remoteClips.append(clip.link)
