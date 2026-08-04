@@ -14,13 +14,13 @@ def getIDPos(metadata):
 
             if untitledPos + 2 == key_titlePos:
                 titleIDPos = metadata.index(b"title", key_titlePos + 1) + len("title")
-                return titleIDPos
+                return titleIDPos, True
             
         titleIDPos = metadata.index(b"title") + len("title")
-        return titleIDPos
+        return titleIDPos, False
 
     except ValueError: # if no title key is found
-        return None
+        return None, False
 
 
 def make_sanitize():

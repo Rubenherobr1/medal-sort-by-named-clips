@@ -16,8 +16,9 @@ class Clips:
 
         self.isNew = False
         self.remoteLink = None
-        
+
         self.ogPath: Path
+        self.isManualImport: bool
 
 # define exception names
 class DownloadFailedError(Exception): pass
@@ -210,7 +211,7 @@ for metadata, id, path, imgPath in resultSet:
 
 
     # get the title
-    titleIDPos = htitle.getIDPos(metadata)
+    titleIDPos, clip.isManualImport = htitle.getIDPos(metadata)
     if titleIDPos is None: continue
 
     title, titlePos = decodeStrType(metadata, titleIDPos, yieldPos = True)
@@ -231,10 +232,18 @@ for metadata, id, path, imgPath in resultSet:
 
     else:
         # start search after the utf-8 encded title (could have more bytes 
-        # on non-ASCII chars) to prevent any error due to user input
+        # because of non-ASCII chars) to prevent any error due to user input
+
+        if clip.isManualImport: # title is after contentShareUrl
+            indexStart = 0
+            indexEnd = titlePos
+        else:
+            indexStart = titlePos + len(title.encode("utf-8"))
+            indexEnd = len(metadata)
+
 
         clip.remoteLink = decodeStrType( 
-            metadata, metadata.index(b"contentShareUrl", titlePos + len(title.encode("utf-8"))) + len("contentShareUrl")
+            metadata, metadata.index(b"contentShareUrl", indexStart, indexEnd) + len("contentShareUrl")
         )
         
         fileExtension = queryFileExtension(clip.remoteLink) 
