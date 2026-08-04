@@ -7,16 +7,18 @@ import sys
 from pathlib import Path
 
 # custom modules
-import handle_title as htitle # custom module
+import handle_title as htitle
 
 
 class Clips:
     def __init__(self, id):
         self.id = id
 
+        # defult values
         self.isNew = False
         self.remoteLink = None
 
+        # attributes defined later
         self.ogPath: Path
         self.isManualImport: bool
 

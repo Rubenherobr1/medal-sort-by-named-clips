@@ -76,7 +76,6 @@ sanitize = make_sanitize()
 
         
 # -checks-
-
 # check if the title is repeated
 def make_checkRepeated():
     ogTitles = [] # used to see how many times a title repeats
