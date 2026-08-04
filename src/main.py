@@ -134,7 +134,7 @@ def downloadClips(remoteClipList):
         raise DownloadFailedError(f"The download failed ({errCode})")
 
 
-# utility functions
+# -utility functions-
 def endScript():
     print("Exiting...\n")
     sys.exit()
