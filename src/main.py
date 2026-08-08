@@ -1,6 +1,7 @@
 import sqlite3 as sqlite
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 import subprocess
+import inspect
 import json
 import sys
 
@@ -111,8 +112,17 @@ for path in medalPath.iterdir():
 
 
 # connect to sqlite database and get the video metadata, path and id + the image path to check if it's an image or video
+query = inspect.cleandoc("""
+    SELECT local_content_id, video_path, metadata
+    FROM contents
+    WHERE NOT EXISTS (
+        SELECT image_path
+        FROM contents
+    )
+""")
+
 db = sqlite.connect(dbPath) 
-resultSet = db.execute("SELECT metadata, local_content_id, video_path, image_path FROM contents")
+resultSet = db.execute(query)
 
 print("Connected to database and executed query\n")
 
@@ -148,8 +158,6 @@ clipList = []
 
 for metadata, id, path, imgPath in resultSet: 
     clip = Clips(id)
-
-    if imgPath: continue # if it's a screenshot, by example
 
     # check if the clip is arleady in the directory
     if previousClips.get(id) is not None:
