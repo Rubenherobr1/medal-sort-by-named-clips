@@ -166,11 +166,10 @@ clipList = []
 for id, ogPath, metadata in resultSet: 
     # check if the clip is arleady in the directory
     if previousClips.get(id) is not None:
-        clip.path = Path(previousClips.get(id))
-        clipList.append(clip)
+        path = Path(previousClips.get(id))
+        clipList.append(Clips(id, path))
 
-        print(f"Found '{clip.path.stem}'")
-
+        print(f"Found '{path.stem}'")
         continue
 
 
