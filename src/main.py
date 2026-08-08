@@ -97,6 +97,11 @@ def plural(value):
     else: return "s" # w/ 0, the gramticly correct thing is with s
 
 
+def toggleJSONVisibility(hideFile):
+    if sys.platform == "win32":
+        subprocess.run(["attrib", f"{"+" if hideFile else "-"}H", jsonPath], check=True)
+
+
 # find db path
 medalPath = Path(Path.home(), "AppData", "Roaming", "Medal")
 
@@ -280,18 +285,17 @@ if remoteClips:
 # generate JSON file to differentiate between user-created "Named-clips" folders,
 # to check if there are outdated clips or if a clips is arleady in the directory
 
-if sys.platform == "win32" and jsonPath.exists():
-    # temporarily make the file visible again so i have write permissions
-    subprocess.run(["attrib", "-H", jsonPath], check=True) 
+# temporarily make the file visible again so i have write permissions
+if jsonPath.exists(): 
+    toggleJSONVisibility(hideFile = False)
 
 
 with open(jsonPath, "w") as fJSON:
     json.dump({clip.id: str(clip.path) for clip in clipList}, fJSON, indent = "\t")
 
 
-if sys.platform == "win32": 
-    # hide the file to disencourage edits/deletion
-    subprocess.run(["attrib", "+H", jsonPath], check=True)
+# hide the file to disencourage edits/deletion
+toggleJSONVisibility(hideFile = True)
 
 print(f"Generated JSON file successfully")
 endScript()
