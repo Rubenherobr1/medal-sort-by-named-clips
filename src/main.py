@@ -4,7 +4,7 @@ import subprocess
 import inspect
 import json
 import sys
-
+from dataclasses import dataclass
 from pathlib import Path
 
 # custom modules
@@ -12,19 +12,16 @@ import handle_title as htitle
 from shared import decodeStrType
 
 
-class Clips:
-    def __init__(self, id):
-        self.id = id
-
-        # defult values
-        self.isNew = False
-        self.remoteLink = None
-
-        # attributes defined later
-        self.ogPath: Path
-
 # define exception names
 class DownloadFailedError(Exception): pass
+
+@dataclass
+class Clips:
+    id: str
+    path: Path
+    isNew: bool = False
+    ogPath: Path = None
+    remoteLink: str = None
 
 
 # -pre-processing-
