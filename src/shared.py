@@ -1,6 +1,14 @@
 # -decoding related-
 class UnknownStrTypeError(Exception): pass
 
+class DecodedStrs(str): # custom str class that can have attributes
+    def __new__(cls, obj, pos):
+        return super().__new__(cls, obj)
+
+    def __init__(self, obj, pos):
+        self.pos = pos
+
+
 def normBin(decimalByte):
     byte = bin(decimalByte).replace("0b", "")
     byte = "0" * (8 - len(byte)) + byte # ensures the representation will have 8 bytes regardless
@@ -38,6 +46,7 @@ def decodeStrType(metadata, strIDPos):
     # the length of the str is the 1st nibble of the strID byte
     else:
         if sizeID == 0:
+            return None
         
         strLen = sizeID
         strPos = strIDPos + 1
@@ -45,5 +54,6 @@ def decodeStrType(metadata, strIDPos):
 
     txt = metadata[strPos : strPos + strLen].decode()
 
+    return DecodedStrs(txt, strPos)
 
 
