@@ -5,6 +5,44 @@ import os
 
 def getIDPos(metadata):
     key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
+# setup list of restricted charecters and names for filenames
+fakeChars = { # fullwidth variants of restricted charecters
+    "/": "\uff0f",
+    ">": "\uff1e",
+    "<": "\uff1c",
+    "|": "\uff5c",
+    ":": "\uff1a",
+    "&": "\uff06",
+    "?": "\uff1f",
+    "*": "\uff0a"
+}
+
+if sys.platform == "win32":
+    fakeChars["\\"] = "\uff3c"
+    fakeChars["\""] = "\uff02"
+
+    # names that are reserved on Windows
+    win32Names = ["CON", "PRN", "AUX", "NUL"] 
+
+    for i in range(9):
+            f"COM{i+1}", f"LPT{i+1}"
+        ))
+
+    # superscript numbers from 1 to 3
+    for supN in ("\u00b9", "\u00b2", "\u00b3"): 
+            f"COM{supN}", f"LPT{supN}"
+        ))
+
+bannedChars = fakeChars.keys()
+
+# define length limit constants
+if sys.platform == "win32":
+    MAX_FILENAME = 255
+    MAX_PATH = 260 - 1 # not counting the null terminator    
+
+else: # unix based systems
+    MAX_FILENAME = os.pathconf("/", "PC_NAME_MAX")  
+    MAX_PATH = os.pathconf("/", "PC_PATH_MAX")
 
     try:
         if (untitledPos := metadata.find(b"Untitled")) != -1:
@@ -23,37 +61,11 @@ def getIDPos(metadata):
         return None, False
 
 
-def make_sanitize():
-    fakeChars = { # fullwidth variants of the restricted filename charecters
-        "/": "\uff0f",
-        ">": "\uff1e",
-        "<": "\uff1c",
-        "|": "\uff5c",
-        ":": "\uff1a",
-        "&": "\uff06",
-        "?": "\uff1f",
-        "*": "\uff0a"
-    }
 
-    if sys.platform == "win32":
-        fakeChars["\\"] = "\uff3c"
-        fakeChars["\""] = "\uff02"
 
-        # names that are reserved on Windows
-        win32Names = ["CON", "PRN", "AUX", "NUL"] 
 
-        for i in range(9):
-            win32Names.append((
-                f"COM{i+1}", f"LPT{i+1}"
-            ))
 
-        # superscript numbers from 1 to 3
-        for supN in ("\u00b9", "\u00b2", "\u00b3"): 
-            win32Names.append((
-                f"COM{supN}", f"LPT{supN}"
-            ))
 
-    bannedChars = fakeChars.keys()
 
 
     def sanitize(title):
@@ -70,9 +82,6 @@ def make_sanitize():
             elif title.endswith(" "):
                 title = title.strip()
 
-    return sanitize
-
-sanitize = make_sanitize()
 
         
 # -checks-
