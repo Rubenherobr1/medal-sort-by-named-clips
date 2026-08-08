@@ -161,9 +161,9 @@ ydl = ytdlp.YoutubeDL(config)
 # parse the db result set
 clipList = []
 
-for metadata, id, path, imgPath in resultSet: 
     clip = Clips(id)
 
+for id, ogPath, metadata in resultSet: 
     # check if the clip is arleady in the directory
     if previousClips.get(id) is not None:
         clip.path = Path(previousClips.get(id))
@@ -188,11 +188,11 @@ for metadata, id, path, imgPath in resultSet:
 
 
     # check if the clip is remote
-    if path is not None:
-        path = Path(path)
 
         clip.ogPath = path
         fileExtension = path.suffix
+    if ogPath is not None:
+        ogPath = Path(ogPath)
 
     else:
         # start search after the utf-8 encded title (could have more bytes 
