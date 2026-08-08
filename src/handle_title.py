@@ -25,11 +25,13 @@ if sys.platform == "win32":
     win32Names = ["CON", "PRN", "AUX", "NUL"] 
 
     for i in range(9):
+        win32Names.extend((
             f"COM{i+1}", f"LPT{i+1}"
         ))
 
     # superscript numbers from 1 to 3
     for supN in ("\u00b9", "\u00b2", "\u00b3"): 
+        win32Names.extend((
             f"COM{supN}", f"LPT{supN}"
         ))
 
