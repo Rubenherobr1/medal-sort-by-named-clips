@@ -1,6 +1,5 @@
 # title-related functions
 import sys
-import os
 
 
 def getIDPos(metadata):
@@ -43,6 +42,8 @@ if sys.platform == "win32":
     MAX_PATH = 260 - 1 # not counting the null terminator    
 
 else: # unix based systems
+    import os
+
     MAX_FILENAME = os.pathconf("/", "PC_NAME_MAX")  
     MAX_PATH = os.pathconf("/", "PC_PATH_MAX")
 
@@ -115,15 +116,6 @@ checkRepeated = make_checkRepeated()
 
 # check if the title is too long
 class PathSizeError(Exception): pass
-
-if sys.platform == "win32":
-    MAX_FILENAME = 255
-    MAX_PATH = 260 - 1 # not counting the null terminator    
-
-else: # unix based systems
-    MAX_FILENAME = os.pathconf("/", "PC_NAME_MAX")  
-    MAX_PATH = os.pathconf("/", "PC_PATH_MAX")
-
 
 def checkLen(relPath, title, minPathLen):
     path = str(relPath.absolute()) # fix
