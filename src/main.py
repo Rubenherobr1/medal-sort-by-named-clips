@@ -176,9 +176,6 @@ for id, ogPath, metadata in resultSet:
         # "title" is in "Untitled", i need to start the index search after that word
 
     # get the title
-    title, titlePos = decodeStrType(metadata, titleIDPos, yieldPos = True)
-    if title is None: continue
-        
     print(f"Found '{title}'")
     clip.isNew = True
 
@@ -192,6 +189,9 @@ for id, ogPath, metadata in resultSet:
     # check if the clip is remote
 
         clip.ogPath = path
+    rTitle = htitle.getRawTitle(isManualImport, titleKeyPos, metadata)
+    if rTitle is None: continue
+    
     if ogPath is not None:
         ogPath = Path(ogPath)
         fileExt = ogPath.suffix
@@ -202,11 +202,11 @@ for id, ogPath, metadata in resultSet:
 
         if isManualImport: # title is after contentShareUrl
             indexStart = 0
-            indexEnd = titlePos
+            indexEnd = rTitle.pos
         else:
-            indexStart = titlePos + len(title.encode("utf-8"))
-            indexEnd = len(metadata)
 
+            indexStart = rTitle.pos + len(rTitle.encode("utf-8"))
+            indexEnd = len(metadata)
 
         clip.remoteLink = decodeStrType( 
             metadata, metadata.index(b"contentShareUrl", indexStart, indexEnd) + len("contentShareUrl")

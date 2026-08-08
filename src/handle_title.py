@@ -1,5 +1,6 @@
 # title-related functions
 import sys
+from shared import decodeStrType
 
 
 # setup list of restricted charecters and names for filenames
@@ -56,6 +57,12 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
 
     except ValueError: # if no title key is found
         return None
+
+    rTitle = decodeStrType(metadata, IDPos)
+    if rTitle is None: return None
+
+    return rTitle
+
 
 
 
