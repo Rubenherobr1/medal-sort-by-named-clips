@@ -73,7 +73,7 @@ def getPreviousDir():
 
 
 # -remote related-
-def queryFileExtension(link):
+def queryFileExt(link):
     info = ydl.extract_info(link, download = False)
 
     return f".{info["formats"][0]["ext"]}"
@@ -190,9 +190,9 @@ for id, ogPath, metadata in resultSet:
     # check if the clip is remote
 
         clip.ogPath = path
-        fileExtension = path.suffix
     if ogPath is not None:
         ogPath = Path(ogPath)
+        fileExt = ogPath.suffix
 
     else:
         # start search after the utf-8 encded title (could have more bytes 
@@ -210,13 +210,12 @@ for id, ogPath, metadata in resultSet:
             metadata, metadata.index(b"contentShareUrl", indexStart, indexEnd) + len("contentShareUrl")
         )
         
-        fileExtension = queryFileExtension(clip.remoteLink) 
-        
         
     # check if the title is repeated
     suffix = htitle.checkRepeated(title)
     if suffix: title += suffix
 
+        fileExt = queryFileExt(remoteLink)
 
     # check if the title is too long
     minPathLen = len(str(clipsDir)) + len(suffix) + len(fileExtension)
