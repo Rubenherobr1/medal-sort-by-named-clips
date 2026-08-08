@@ -2,8 +2,6 @@
 import sys
 
 
-def getIDPos(metadata):
-    key_titlePos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
 # setup list of restricted charecters and names for filenames
 fakeChars = { # fullwidth variants of restricted charecters
     "/": "\uff0f",
@@ -47,21 +45,17 @@ else: # unix based systems
     MAX_FILENAME = os.pathconf("/", "PC_NAME_MAX")  
     MAX_PATH = os.pathconf("/", "PC_PATH_MAX")
 
-    try:
-        if (untitledPos := metadata.find(b"Untitled")) != -1:
-            # for imported clips, a key called "contentTitle" will always be "Untitled", and never change,
-            # and for clips that are manually imported, the "title" key will be at the end. Since the word
-            # "title" is in "Untitled", i need to start the index search after that word
 
-            if untitledPos + 2 == key_titlePos:
-                titleIDPos = metadata.index(b"title", key_titlePos + 1) + len("title")
-                return titleIDPos, True
-            
-        titleIDPos = metadata.index(b"title") + len("title")
-        return titleIDPos, False
+def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
+    # get the identifier for the title value and decode the title str
+    try:
+        if clipIsManualImport:
+            IDPos = metadata.index(b"title", titleKeyPos + 1) + len("title")
+        else:  
+            IDPos = metadata.index(b"title") + len("title")
 
     except ValueError: # if no title key is found
-        return None, False
+        return None
 
 
 

@@ -22,7 +22,6 @@ class Clips:
 
         # attributes defined later
         self.ogPath: Path
-        self.isManualImport: bool
 
 # define exception names
 class DownloadFailedError(Exception): pass
@@ -164,6 +163,7 @@ clipList = []
     clip = Clips(id)
 
 for id, ogPath, metadata in resultSet: 
+    titleKeyPos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
     # check if the clip is arleady in the directory
     if previousClips.get(id) is not None:
         path = Path(previousClips.get(id))
@@ -172,11 +172,13 @@ for id, ogPath, metadata in resultSet:
         print(f"Found '{path.stem}'")
         continue
 
+    # check if the clip was manually imported
+    if (untitledPos := metadata.find(b"Untitled")) != -1:
+        # for imported clips, a key called "contentTitle" will always be "Untitled", and never change,
+        # and for clips that are manually imported, the "title" key will be at the end. Since the word
+        # "title" is in "Untitled", i need to start the index search after that word
 
     # get the title
-    titleIDPos, clip.isManualImport = htitle.getIDPos(metadata)
-    if titleIDPos is None: continue
-
     title, titlePos = decodeStrType(metadata, titleIDPos, yieldPos = True)
     if title is None: continue
         
@@ -185,6 +187,10 @@ for id, ogPath, metadata in resultSet:
 
     title = htitle.sanitize(title)
 
+        if untitledPos + 2 == titleKeyPos:
+            isManualImport = True
+        else:
+            isManualImport = False
 
     # check if the clip is remote
 
@@ -197,7 +203,7 @@ for id, ogPath, metadata in resultSet:
         # start search after the utf-8 encded title (could have more bytes 
         # because of non-ASCII chars) to prevent any error due to user input
 
-        if clip.isManualImport: # title is after contentShareUrl
+        if isManualImport: # title is after contentShareUrl
             indexStart = 0
             indexEnd = titlePos
         else:
