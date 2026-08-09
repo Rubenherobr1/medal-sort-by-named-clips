@@ -176,10 +176,7 @@ for id, ogPath, metadata in resultSet:
         # "title" is in "Untitled", i need to start the index search after that word
 
     # get the title
-    print(f"Found '{title}'")
     clip.isNew = True
-
-    title = htitle.sanitize(title)
 
         if untitledPos + 2 == titleKeyPos:
             isManualImport = True
@@ -226,6 +223,8 @@ for id, ogPath, metadata in resultSet:
     if (newTitle := htitle.checkLen(clip.path, minPathLen, title)) is not None:
         clip.path = clipsDir / (newTitle + fileExtension)
 
+    title = htitle.sanitizeTitle(rTitle, clipsDir, fileExt)
+    print(f"Found '{title}'")
 
     clipList.append(clip)
 
