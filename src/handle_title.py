@@ -65,10 +65,16 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
     return rTitle
 
 
+def make_truncateTitle():
+    isFirstCall = True
+
     def truncateTitle(txt, path, minPathLen):
+        nonlocal isFirstCall
 
         if len(txt) > MAX_FILENAME or len(path) > MAX_PATH:
+            if isFirstCall:
                 print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
+                isFirstCall = False
 
             if len(txt) > MAX_FILENAME:
                 txt = txt[:(MAX_FILENAME - 1)]
@@ -84,7 +90,9 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
                     )
                 
         return txt    
+    return truncateTitle
 
+truncateTitle = make_truncateTitle()
 
 
 def make_sanitizeTitle():
@@ -120,12 +128,20 @@ def make_sanitizeTitle():
 
         ogTitles.append(ogTitle)
 
+        # check if the truncated title is repeated (since 2 different 
+        # titles at the start might yield the same truncated one)
         if (nRepeats := ogTitles.count(title)) > 1:
             suffix = f"-{nRepeats}"
             print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
 
+            ogTitle = title
+            title += suffix
 
+            testPath.replace(ogTitle + ".", title + ".") # the dot guarantees its not a dir with the same name as the file
+            minPathLen += len(suffix)
 
+            # check again if it should be truncated due to the added suffix
+            title = truncateTitle(title, testPath, minPathLen)
 
     return sanitizeTitle
 
