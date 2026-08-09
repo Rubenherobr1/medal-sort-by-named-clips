@@ -208,11 +208,6 @@ for id, ogPath, metadata in resultSet:
         clip.remoteLink = decodeStrType( 
             metadata, metadata.index(b"contentShareUrl", indexStart, indexEnd) + len("contentShareUrl")
         )
-        
-        
-    # check if the title is repeated
-    suffix = htitle.checkRepeated(title)
-    if suffix: title += suffix
 
         fileExt = queryFileExt(remoteLink)
 

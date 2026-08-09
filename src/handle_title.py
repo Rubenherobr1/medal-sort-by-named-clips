@@ -87,6 +87,9 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
 
 
 
+def make_sanitizeTitle():
+    ogTitles = [] # used to see how many times a title repeats
+
     def sanitizeTitle(title, clipsDir, fileExt):
         minPathLen = len(str(clipsDir)) + len(fileExt)
         testPath = str(
@@ -111,35 +114,21 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
         # check if the current title needs to be truncated
         title = truncateTitle(title, testPath, minPathLen)
 
-        
-# -checks-
-# check if the title is repeated
-def make_checkRepeated():
-    ogTitles = [] # used to see how many times a title repeats
-
-    def checkRepeated(title):
         # on windows, don't assume case sensitivity for filenames
         if sys.platform == "win32": ogTitle = title.casefold()
         else: ogTitle = title
 
         ogTitles.append(ogTitle)
 
-
         if (nRepeats := ogTitles.count(title)) > 1:
             suffix = f"-{nRepeats}"
             print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
 
-        else:
-            suffix = ""
-
-        return suffix
-
-    return checkRepeated
-
-checkRepeated = make_checkRepeated()
 
 
 
+    return sanitizeTitle
 
+sanitizeTitle = make_sanitizeTitle()
 
 
