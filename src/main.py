@@ -1,5 +1,4 @@
 import sqlite3 as sqlite
-import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 import subprocess
 import inspect
 import json
@@ -7,12 +6,12 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-# custom modules
+# modules that aren't bultin
 import handle_title as htitle
+import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
 from shared import decodeStrType
 
 
-# define exception names
 class DownloadFailedError(Exception): pass
 
 @dataclass
@@ -175,7 +174,6 @@ for id, ogPath, metadata in resultSet:
         # and for clips that are manually imported, the "title" key will be at the end. Since the word
         # "title" is in "Untitled", i need to start the index search after that word
 
-    # get the title
         if untitledPos + 2 == titleKeyPos:
             isManualImport = True
         else:
@@ -190,13 +188,12 @@ for id, ogPath, metadata in resultSet:
         fileExt = ogPath.suffix
 
     else:
-        # start search after the utf-8 encded title (could have more bytes 
-        # because of non-ASCII chars) to prevent any error due to user input
-
         if isManualImport: # title is after contentShareUrl
             indexStart = 0
             indexEnd = rTitle.pos
         else:
+            # start search after the utf-8 encoded title (could have more bytes 
+            # because of non-ASCII chars) to prevent any error due to user input
 
             indexStart = rTitle.pos + len(rTitle.encode("utf-8"))
             indexEnd = len(metadata)
@@ -208,6 +205,7 @@ for id, ogPath, metadata in resultSet:
         fileExt = queryFileExt(remoteLink)
 
 
+    # get the usable title (filename-wise)
     title = htitle.sanitizeTitle(rTitle, clipsDir, fileExt)
     print(f"Found '{title}'")
 

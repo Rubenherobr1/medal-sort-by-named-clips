@@ -1,10 +1,8 @@
-# title-related functions
 import sys
 from shared import decodeStrType
 
 
 class PathSizeError(Exception): pass
-
 
 # setup list of restricted charecters and names for filenames
 fakeChars = { # fullwidth variants of restricted charecters
