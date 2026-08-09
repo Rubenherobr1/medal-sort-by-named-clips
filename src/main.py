@@ -157,10 +157,10 @@ ydl = ytdlp.YoutubeDL(config)
 # parse the db result set
 clipList = []
 
-    clip = Clips(id)
-
 for id, ogPath, metadata in resultSet: 
     titleKeyPos = metadata.index(b"title") # position of the key for the key: value pair where value is the actual title
+    remoteLink = None # so it can be safely put as a param (no value error or whatev)
+        
     # check if the clip is arleady in the directory
     if previousClips.get(id) is not None:
         path = Path(previousClips.get(id))
@@ -176,16 +176,12 @@ for id, ogPath, metadata in resultSet:
         # "title" is in "Untitled", i need to start the index search after that word
 
     # get the title
-    clip.isNew = True
-
         if untitledPos + 2 == titleKeyPos:
             isManualImport = True
         else:
             isManualImport = False
 
     # check if the clip is remote
-
-        clip.ogPath = path
     rTitle = htitle.getRawTitle(isManualImport, titleKeyPos, metadata)
     if rTitle is None: continue
     
@@ -205,7 +201,7 @@ for id, ogPath, metadata in resultSet:
             indexStart = rTitle.pos + len(rTitle.encode("utf-8"))
             indexEnd = len(metadata)
 
-        clip.remoteLink = decodeStrType( 
+        remoteLink = decodeStrType( 
             metadata, metadata.index(b"contentShareUrl", indexStart, indexEnd) + len("contentShareUrl")
         )
 
@@ -215,8 +211,9 @@ for id, ogPath, metadata in resultSet:
     title = htitle.sanitizeTitle(rTitle, clipsDir, fileExt)
     print(f"Found '{title}'")
 
-    clipList.append(clip)
+    isNew = True
     path = clipsDir / (title + fileExt)
+    clipList.append(Clips(id, path, isNew, ogPath, remoteLink))
 
 print(f"Finished sorting through clips (found {len(clipList)})")
 db.close()
