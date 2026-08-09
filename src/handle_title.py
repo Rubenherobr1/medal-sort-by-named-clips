@@ -141,6 +141,7 @@ def make_sanitizeTitle():
             # check again if it should be truncated due to the added suffix
             title = truncateTitle(title, testPath, minPathLen)
 
+        return title
     return sanitizeTitle
 
 sanitizeTitle = make_sanitizeTitle()
