@@ -216,17 +216,12 @@ for id, ogPath, metadata in resultSet:
 
         fileExt = queryFileExt(remoteLink)
 
-    # check if the title is too long
-    minPathLen = len(str(clipsDir)) + len(suffix) + len(fileExtension)
-    clip.path = clipsDir / (title + fileExtension)
-        
-    if (newTitle := htitle.checkLen(clip.path, minPathLen, title)) is not None:
-        clip.path = clipsDir / (newTitle + fileExtension)
 
     title = htitle.sanitizeTitle(rTitle, clipsDir, fileExt)
     print(f"Found '{title}'")
 
     clipList.append(clip)
+    path = clipsDir / (title + fileExt)
 
 print(f"Finished sorting through clips (found {len(clipList)})")
 db.close()

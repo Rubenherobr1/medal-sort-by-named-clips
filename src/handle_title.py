@@ -87,8 +87,14 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
 
 
 
+    def sanitizeTitle(title, clipsDir, fileExt):
+        minPathLen = len(str(clipsDir)) + len(fileExt)
+        testPath = str(
+            (clipsDir / (title + fileExt)).absolute()
+        )
 
-    def sanitize(title):
+        # sanitize the title to make it as accurate as possible to the 
+        # original clips' name, yet still be a valid filename
         for bannedChar in bannedChars:
             if bannedChar in title:
                 for _ in range(title.count(bannedChar)):
@@ -102,6 +108,8 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
             elif title.endswith(" "):
                 title = title.strip()
 
+        # check if the current title needs to be truncated
+        title = truncateTitle(title, testPath, minPathLen)
 
         
 # -checks-
@@ -129,11 +137,6 @@ def make_checkRepeated():
     return checkRepeated
 
 checkRepeated = make_checkRepeated()
-
-
-
-    path = str(relPath.absolute()) # fix
-
 
 
 
