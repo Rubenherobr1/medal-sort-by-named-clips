@@ -3,6 +3,9 @@ import sys
 from shared import decodeStrType
 
 
+class PathSizeError(Exception): pass
+
+
 # setup list of restricted charecters and names for filenames
 fakeChars = { # fullwidth variants of restricted charecters
     "/": "\uff0f",
@@ -62,10 +65,25 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
     return rTitle
 
 
+    def truncateTitle(txt, path, minPathLen):
 
+        if len(txt) > MAX_FILENAME or len(path) > MAX_PATH:
+                print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
+            if len(txt) > MAX_FILENAME:
+                txt = txt[:(MAX_FILENAME - 1)]
 
+            if len(path) > MAX_PATH:
+                charsLeft = MAX_PATH - minPathLen
+                txt = txt[:charsLeft] 
 
+                if not txt:
+                    raise PathSizeError(
+                        f"The resulting path is too big (>{MAX_PATH}), even if the file name is truncated:\n" /
+                        path
+                    )
+                
+        return txt    
 
 
 
@@ -113,30 +131,12 @@ def make_checkRepeated():
 checkRepeated = make_checkRepeated()
 
 
-# check if the title is too long
-class PathSizeError(Exception): pass
 
-def checkLen(relPath, title, minPathLen):
     path = str(relPath.absolute()) # fix
 
-    if len(title) > MAX_FILENAME or len(path) > MAX_PATH:
-        print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
 
-        if len(title) > MAX_FILENAME:
-            title = title[:(MAX_FILENAME - 1)]
 
-        if len(path) > MAX_PATH:
-            charsLeft = MAX_PATH - minPathLen
-            title = title[:charsLeft] 
-    
-            if not title:
-                raise PathSizeError(
-                    f"The resulting path is too big (>{MAX_PATH}), even if the file name is truncated:\n" /
-                    path
-                )
-    
-        return title
 
-    return None
+
 
 
