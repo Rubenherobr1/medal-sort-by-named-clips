@@ -59,8 +59,6 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
         return None
 
     rTitle = decodeStrType(metadata, IDPos)
-    if rTitle is None: return None
-
     return rTitle
 
 
