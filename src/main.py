@@ -167,6 +167,8 @@ for id, ogPath, metadata in resultSet:
         continue
 
     # check if the clip was manually imported
+    isManualImport = False
+
     if (untitledPos := metadata.find(b"Untitled")) != -1:
         # for imported clips, a key called "contentTitle" will always be "Untitled", and never change,
         # and for clips that are manually imported, the "title" key will be at the end. Since the word
@@ -174,8 +176,6 @@ for id, ogPath, metadata in resultSet:
 
         if untitledPos + 2 == titleKeyPos:
             isManualImport = True
-        else:
-            isManualImport = False
 
     # check if the clip is remote
     rTitle = htitle.getRawTitle(isManualImport, titleKeyPos, metadata)
