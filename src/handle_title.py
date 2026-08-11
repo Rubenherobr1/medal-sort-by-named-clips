@@ -60,6 +60,10 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
         return None
 
     rTitle = decodeStrType(metadata, IDPos)
+    
+    # if you name a clip "Untitled", the name is still saved in the db, but does not appear as the title on Medal
+    if rTitle == "Untitled": return None 
+
     return rTitle
 
 
