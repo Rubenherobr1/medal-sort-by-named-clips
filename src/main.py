@@ -181,7 +181,7 @@ for id, ogPath, metadata in resultSet:
     rTitle = htitle.getRawTitle(isManualImport, titleKeyPos, metadata)
 
     if rTitle is None: continue
-    else: print(f"Found '{title}'")
+    else: print(f"Found '{rTitle}'")
 
     if ogPath is not None:
         ogPath = Path(ogPath)
