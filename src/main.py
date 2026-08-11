@@ -115,10 +115,7 @@ for path in medalPath.iterdir():
 query = inspect.cleandoc("""
     SELECT local_content_id, video_path, metadata
     FROM contents
-    WHERE NOT EXISTS (
-        SELECT image_path
-        FROM contents
-    )
+    WHERE image_path IS NULL
 """)
 
 db = sqlite.connect(dbPath) 
