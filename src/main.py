@@ -211,7 +211,7 @@ for id, ogPath, metadata in resultSet:
     path = clipsDir / (title + fileExt)
     clipList.append(Clips(id, path, ogPath, remoteLink, isNew = True))
 
-print(f"{BOLD}Finished sorting through clips (found {len(clipList)}){RESET}")
+print(f"\n{BOLD}Finished sorting through clips (found {len(clipList)}){RESET}\n")
 db.close()
 
 if len(clipList) == 0: endScript()
@@ -239,7 +239,7 @@ newClips = tuple(clip for clip in clipList if clip.isNew)
 remoteClips = []
 hardlinkCount = 0
 
-print("\nChecking if there are any new clips to link or download...")
+print("Checking if there are any new clips to link or download...")
 
 if not newClips: print("No new clips have been found\n")
 else: print()
@@ -256,13 +256,13 @@ for clip in newClips:
         remoteClips.append(clip.remoteLink)
 
 if hardlinkCount:
-    print(f"{BOLD}Finished linking {hardlinkCount} clip{plural(hardlinkCount)}{RESET}\n")
+    print(f"\n{BOLD}Finished linking {hardlinkCount} clip{plural(hardlinkCount)}{RESET}\n")
 
 if remoteClips:
     print(f"Downloading {len(remoteClips)} clip{plural(len(remoteClips))}, this might take a while...\n")
 
     downloadClips(remoteClips)
-    print(f"{BOLD}Finished downloading {len(remoteClips)} clip{plural(len(remoteClips))}{RESET}\n")
+    print(f"\n{BOLD}Finished downloading {len(remoteClips)} clip{plural(len(remoteClips))}{RESET}\n")
 
 
 # generate JSON file to differentiate between user-created "Named-clips" folders,
