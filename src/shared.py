@@ -30,6 +30,7 @@ def decodeStrType(metadata, strIDPos):
     unknownStrType = int("E", 16)
 
     skipSlash = True
+    escapedTxt = ""
 
 
     # the length of the str is in the next byte
