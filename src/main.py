@@ -140,14 +140,15 @@ else:
 
 # set up class that handles remote clips
 config = {
-    "outtmpl": "%(title)s.%(ext)s", # the filename template
-    "quiet": "true", # don't print messages to stdout
-    "overwrites": "false", # don't overwrite other files
-    "paths": {
-        "home": str(clipsDir) # the default path to put the downloads in
-    },
-    "sleep_interval_requests": 1, # number of seconds to sleep before each download
-    "sleep_interval": 5 # number of seconds to sleep between requests (during extraction)
+    "quiet": "true", # don't print messages to terminal
+    "overwrites": "false", # don't overwrite other files   
+
+    "outtmpl": "%(title)s.%(ext)s", # filename template
+    "paths": {"home": str(clipsDir)}, # the default path to put the downloads in
+
+    # yt-dlp recommendation when downloading batch files
+    "sleep_interval_requests": 1, # sleep 1s before each download
+    "sleep_interval": 5 # sleep 5s between requests (during extraction)
 }
 
 ydl = ytdlp.YoutubeDL(config)
