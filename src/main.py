@@ -18,10 +18,10 @@ class DownloadFailedError(Exception): pass
 class Clips:
     id: str
     path: Path
-    isNew: bool = False
     ogPath: Path = None
     remoteLink: str = None
-
+    isNew: bool = False
+    
 
 # -pre-processing-
 def getPreviousDir():
@@ -208,9 +208,8 @@ for id, ogPath, metadata in resultSet:
     # get the usable title (filename-wise)
     title = htitle.sanitizeTitle(rTitle, clipsDir, fileExt)
 
-    isNew = True
     path = clipsDir / (title + fileExt)
-    clipList.append(Clips(id, path, isNew, ogPath, remoteLink))
+    clipList.append(Clips(id, path, ogPath, remoteLink, isNew = True))
 
 print(f"Finished sorting through clips (found {len(clipList)})")
 db.close()
