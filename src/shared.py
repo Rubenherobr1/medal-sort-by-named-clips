@@ -1,3 +1,9 @@
+# escape codes for text formatting in the terminal
+BOLD_UNDER = "\033[1;4m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+
 # -decoding related-
 class UnknownStrTypeError(Exception): pass
 

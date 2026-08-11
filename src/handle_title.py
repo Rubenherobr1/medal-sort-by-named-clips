@@ -1,5 +1,5 @@
 import sys
-from shared import decodeStrType
+from shared import decodeStrType, BOLD_UNDER, RESET
 
 
 class PathSizeError(Exception): pass
@@ -71,7 +71,7 @@ def make_truncateTitle():
 
         if len(txt) > MAX_FILENAME or len(path) > MAX_PATH:
             if isFirstCall:
-                print(f"\033[1;4mNote\033[0m: The title is too big, so it will be truncated")
+                print(f"{BOLD_UNDER}Note{RESET}: The title is too big, so it will be truncated")
                 isFirstCall = False
 
             if len(txt) > MAX_FILENAME:
@@ -130,7 +130,7 @@ def make_sanitizeTitle():
         # titles at the start might yield the same truncated one)
         if (nRepeats := ogTitles.count(title)) > 1:
             suffix = f"-{nRepeats}"
-            print(f"\033[1;4mNote\033[0m: The title is repeated, so '{suffix}' will be added at the end")
+            print(f"{BOLD_UNDER}Note{RESET}: The title is repeated, so '{suffix}' will be added at the end")
 
             ogTitle = title
             title += suffix
