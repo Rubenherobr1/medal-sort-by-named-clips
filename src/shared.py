@@ -29,6 +29,8 @@ def decodeStrType(metadata, strIDPos):
     str8, str16 = int("C", 16), int("D", 16)
     unknownStrType = int("E", 16)
 
+    skipSlash = True
+
 
     # the length of the str is in the next byte
     if sizeID == str8:
@@ -57,9 +59,17 @@ def decodeStrType(metadata, strIDPos):
         strLen = sizeID
         strPos = strIDPos + 1
 
-
     txt = metadata[strPos : strPos + strLen].decode()
 
-    return DecodedStrs(txt, strPos)
+    for char in txt:
+        if char == "\\" and skipSlash:
+            skipSlash = False # if its another \
+            continue
+        else:
+            skipSlash = True # reset value
+
+        escapedTxt += char
+
+    return DecodedStrs(escapedTxt, strPos)
 
 
