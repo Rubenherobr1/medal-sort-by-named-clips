@@ -9,7 +9,7 @@ from pathlib import Path
 # modules that aren't bultin
 import handle_title as htitle
 import yt_dlp as ytdlp # https://github.com/yt-dlp/yt-dlp
-from shared import decodeStrType
+from shared import decodeStrType, BOLD, RESET
 
 
 class DownloadFailedError(Exception): pass
@@ -211,7 +211,7 @@ for id, ogPath, metadata in resultSet:
     path = clipsDir / (title + fileExt)
     clipList.append(Clips(id, path, ogPath, remoteLink, isNew = True))
 
-print(f"Finished sorting through clips (found {len(clipList)})")
+print(f"{BOLD}Finished sorting through clips (found {len(clipList)}){RESET}")
 db.close()
 
 if len(clipList) == 0: endScript()
@@ -228,7 +228,7 @@ if previousDir:
             outdatedCount += 1
 
     if outdatedCount:
-        print(f"Found and deleted {outdatedCount} outdated clip{plural(outdatedCount)}\n")
+        print(f"{BOLD}Found and deleted {outdatedCount} outdated clip{plural(outdatedCount)}{RESET}\n")
 
 else:
     clipsDir.mkdir()
@@ -256,13 +256,13 @@ for clip in newClips:
         remoteClips.append(clip.remoteLink)
 
 if hardlinkCount:
-    print(f"Finished linking {hardlinkCount} clip{plural(hardlinkCount)}\n")
+    print(f"{BOLD}Finished linking {hardlinkCount} clip{plural(hardlinkCount)}{RESET}\n")
 
 if remoteClips:
     print(f"Downloading {len(remoteClips)} clip{plural(len(remoteClips))}, this might take a while...\n")
 
     downloadClips(remoteClips)
-    print(f"Finished downloading {len(remoteClips)} clip{plural(len(remoteClips))}\n")
+    print(f"{BOLD}Finished downloading {len(remoteClips)} clip{plural(len(remoteClips))}{RESET}\n")
 
 
 # generate JSON file to differentiate between user-created "Named-clips" folders,
