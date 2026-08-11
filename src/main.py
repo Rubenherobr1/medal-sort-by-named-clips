@@ -163,7 +163,7 @@ for id, ogPath, metadata in resultSet:
         path = Path(previousClips.get(id))
         clipList.append(Clips(id, path))
 
-        print(f"Found '{path.stem}'")
+        print(f"Found '{path.stem}' (arleady in directory)")
         continue
 
     # check if the clip was manually imported
@@ -179,8 +179,10 @@ for id, ogPath, metadata in resultSet:
 
     # check if the clip is remote
     rTitle = htitle.getRawTitle(isManualImport, titleKeyPos, metadata)
+
     if rTitle is None: continue
-    
+    else: print(f"Found '{title}'")
+
     if ogPath is not None:
         ogPath = Path(ogPath)
         fileExt = ogPath.suffix
@@ -205,7 +207,6 @@ for id, ogPath, metadata in resultSet:
 
     # get the usable title (filename-wise)
     title = htitle.sanitizeTitle(rTitle, clipsDir, fileExt)
-    print(f"Found '{title}'")
 
     isNew = True
     path = clipsDir / (title + fileExt)
