@@ -1,4 +1,6 @@
+import flags as fl
 import sys
+import re
 from shared import decodeStrType, BOLD_UNDER, RESET
 
 
@@ -62,7 +64,17 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
     rTitle = decodeStrType(metadata, IDPos)
     
     # if you name a clip "Untitled", the name is still saved in the db, but does not appear as the title on Medal
-    if rTitle == "Untitled": return None 
+    if rTitle == "Untitled": 
+        return None
+    
+    elif fl.ignoreDateTime: # refer to https://docs.python.org/3/library/re.html#regular-expression-syntax to understand the syntax
+        reDateISO = r"\d{4}[-\/]\d{2}[-\/]\d{2}"
+        reDate = r"\d{2}[-\/]\d{2}[-\/]\d{4}"
+        
+        reTime = r"\d{2}[-:]\d{2}[-:]\d{2}"
+
+        if re.search(f"({reDate}|{reDateISO}) {reTime}", rTitle) is not None: 
+            return None
 
     return rTitle
 
