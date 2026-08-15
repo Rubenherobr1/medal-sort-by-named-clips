@@ -63,8 +63,9 @@ def getRawTitle(clipIsManualImport, titleKeyPos, metadata):
 
     rTitle = decodeStrType(metadata, IDPos)
     
-    # if you name a clip "Untitled", the name is still saved in the db, but does not appear as the title on Medal
-    if rTitle == "Untitled": 
+    # if you name a clip "Untitled", the name is still saved in the db, but does not appear as the title on Medal,
+    # and decodeStrType can return None if no title has been found
+    if rTitle == "Untitled" or rTitle is None:
         return None
     
     elif fl.ignoreDateTime: # refer to https://docs.python.org/3/library/re.html#regular-expression-syntax to understand the syntax
