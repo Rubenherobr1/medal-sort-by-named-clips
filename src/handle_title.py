@@ -145,7 +145,7 @@ def make_sanitizeTitle():
 
         # check if the truncated title is repeated (since 2 different 
         # titles at the start might yield the same truncated one)
-        if (nRepeats := ogTitles.count(title)) > 1:
+        if (nRepeats := ogTitles.count(ogTitle)) > 1: # count ogTitle since it's casefolded for windows
             suffix = f"-{nRepeats}"
             print(f"{BOLD_UNDER}Note:{RESET} The title is repeated, so '{suffix}' will be added at the end")
 
