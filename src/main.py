@@ -138,6 +138,7 @@ else:
 # set up class that handles remote clips
 config = {
     "quiet": "true", # don't print messages to terminal
+    "no_warnings": "true", # don't print warnings to terminal
     "overwrites": "false", # don't overwrite other files
     "sleep_interval": 5, # sleep 5s between requests (during extraction)
 
